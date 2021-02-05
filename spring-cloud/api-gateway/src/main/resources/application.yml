@@ -1,0 +1,17 @@
+server:
+  port: 8762
+
+spring:
+  application:
+    name: zuul-server
+
+zuul:
+  routes:
+    auth-service:
+      path: /auth/**
+      url: http://127.0.0.1:9100/
+      sensitiveHeaders: Cookie,Set-Cookie
+      stripPrefix: false
+    micro-service:
+      path: /api/**
+      url: http://127.0.0.1:8081/
