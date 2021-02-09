@@ -3,7 +3,7 @@ plugins {
     id 'java'
 }
 
-group = 'com.shoppingmall'
+group = 'com.practice'
 sourceCompatibility = '1.8'
 
 repositories {

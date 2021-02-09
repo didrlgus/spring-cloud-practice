@@ -8,5 +8,5 @@ include 'microservices:microservice1'
 include 'microservices:microservice2'
 include 'microservices:auth-service'
 include 'spring-cloud:api-gateway'
-
+include 'spring-cloud:discovery-service'
 

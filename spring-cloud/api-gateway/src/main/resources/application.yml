@@ -9,9 +9,18 @@ zuul:
   routes:
     auth-service:
       path: /auth/**
+      serviceId: auth-service
       url: http://127.0.0.1:9100/
       sensitiveHeaders: Cookie,Set-Cookie
       stripPrefix: false
     micro-service:
       path: /api/**
+      serviceId: micro-service
       url: http://127.0.0.1:8081/
+eureka:
+  instance:
+    non-secure-port: ${server.port}
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka
