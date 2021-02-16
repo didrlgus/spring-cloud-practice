@@ -4,9 +4,9 @@ pluginManagement {
     }
 }
 rootProject.name = 'practice'
-include 'microservices:microservice1'
-include 'microservices:microservice2'
 include 'microservices:auth-service'
+include 'microservices:user-service'
 include 'spring-cloud:api-gateway'
 include 'spring-cloud:discovery-service'
+include 'microservices:micro-service'
 

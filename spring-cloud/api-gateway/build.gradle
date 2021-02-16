@@ -10,7 +10,7 @@ jar {
 
 dependencies {
     compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compile('org.springframework.boot:spring-boot-starter-web')
     compile('org.springframework.retry:spring-retry:1.2.2.RELEASE')
     compile('org.springframework.cloud:spring-cloud-starter-netflix-zuul')
     compile('org.springframework.cloud:spring-cloud-starter-netflix-eureka-client')

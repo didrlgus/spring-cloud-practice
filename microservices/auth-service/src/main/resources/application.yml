@@ -3,9 +3,25 @@ spring:
     name: auth-service
 server:
   port: 9100
+
+security:
+  jwt:
+    uri: /auth/**
+    header: Authorization
+    prefix: Bearer
+    expiration: 86400 # 24*60*60
+    secret: JwtSecretKey
+
 eureka:
   instance:
+    non-secure-port: ${server.port}
     prefer-ip-address: true
   client:
-    service-url:
-      defaultZone: http://127.0.0.1:8761/eureka  # default address
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+
+user-service:
+  ribbon:
+#    listOfServers: localhost:8081,localhost:8082
+    MaxAutoRetries: 0
+    MaxAutoRetriesNextServer: 1

@@ -1,13 +1,16 @@
 package com.config;
 
-import com.filter.JwtAuthenticationFilter;
+import com.filter.JwtUsernameAndPasswordAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+    private final UserDetailsService userDetailsService;
     private final JwtConfig jwtConfig;
 
     @Override
@@ -23,16 +27,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .exceptionHandling()
-                .authenticationEntryPoint((request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
+                .exceptionHandling().authenticationEntryPoint((request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
                 .and()
-                .addFilterAfter(new JwtAuthenticationFilter(jwtConfig), UsernamePasswordAuthenticationFilter.class)
+                .addFilter(new JwtUsernameAndPasswordAuthenticationFilter(authenticationManager(), jwtConfig))
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, jwtConfig.getUri()).permitAll()
-                .antMatchers(HttpMethod.POST, "/user-service/users").permitAll()
-                .antMatchers(HttpMethod.POST, "/user-service/admin").permitAll()
-                .antMatchers(HttpMethod.POST, "/auth-service/**").permitAll()
-                .antMatchers(HttpMethod.GET,"/user-service/admin").hasRole("ADMIN")
+                .antMatchers(HttpMethod.POST, "/").permitAll()
                 .anyRequest().authenticated();
+    }
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+    }
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

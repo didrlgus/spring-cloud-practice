@@ -3,24 +3,32 @@ server:
 
 spring:
   application:
-    name: zuul-server
+    name: api-gateway
 
 zuul:
   routes:
     auth-service:
-      path: /auth/**
+      path: /**
       serviceId: auth-service
-      url: http://127.0.0.1:9100/
-      sensitiveHeaders: Cookie,Set-Cookie
+      sensitiveHeaders: Cookie, Set-Cookie
       stripPrefix: false
-    micro-service:
-      path: /api/**
-      serviceId: micro-service
-      url: http://127.0.0.1:8081/
+    user-service:
+      path: /**
+      serviceId: user-service
+      stripPrefix: false
+
 eureka:
   instance:
     non-secure-port: ${server.port}
     prefer-ip-address: true
   client:
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka
+      defaultZone: http://localhost:8761/eureka/
+
+security:
+  jwt:
+    uri: /auth/**
+    header: Authorization
+    prefix: Bearer
+    expiration: 86400 # 24*60*60
+    secret: JwtSecretKey
