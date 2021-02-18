@@ -9,5 +9,5 @@ public class UserCredentials {
     private Long id;
     private String identifier;
     private String password;
-    private String roles;
+    private String authority;
 }

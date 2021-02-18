@@ -1,65 +1,36 @@
 package com.controller;
 
+import com.common.error.ErrorCode;
+import com.common.error.exception.EntityNotFoundException;
 import com.domain.User;
 import com.domain.UserRepository;
 import com.dto.users.UserAddRequestDto;
+import com.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
 public class UserController {
 
     private final UserRepository userRepository;
+    private final UserService userService;
 
     @PostMapping("/users")
-    public ResponseEntity<?> addUser(@RequestBody UserAddRequestDto userAddRequestDto) {
+    public ResponseEntity<Map<String, Object>> addUser(@RequestBody @Valid UserAddRequestDto userAddRequestDto) {
 
-        return null;
-    }
-
-    @GetMapping("/")
-    public String test() {
-        return "user success!";
-    }
-
-    @GetMapping("/admin")
-    public String test2() {
-
-        return "admin success!";
-    }
-
-    @PostMapping("/users")
-    public ResponseEntity<?> addUser(@RequestBody User user) {
-        User newUser = new User();
-        newUser.setIdentifier(user.getIdentifier());
-        newUser.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-        newUser.setAuthority("ROLE_USER");
-
-        userRepository.save(newUser);
-
-        return ResponseEntity.ok("유저 add 성공!");
-    }
-
-    @PostMapping("/admin")
-    public ResponseEntity<?> addAdmin(@RequestBody User user) {
-        User newUser = new User();
-        newUser.setIdentifier(user.getIdentifier());
-        newUser.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
-        newUser.setAuthority("ROLE_ADMIN");
-
-        userRepository.save(newUser);
-
-        return ResponseEntity.ok("어드민 add 성공!");
+        return ResponseEntity.ok(userService.addUser(userAddRequestDto));
     }
 
     @GetMapping("/users")
     public ResponseEntity<User> getUser(@RequestParam("identifier") String identifier) {
 
         User authUser = userRepository.findByIdentifier(identifier)
-                .orElseThrow(() -> new RuntimeException("존재하지 않는 유저입니다."));
+                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.ENTITY_NOT_FOUND.getMessage()));
 
         return ResponseEntity.ok(authUser);
     }

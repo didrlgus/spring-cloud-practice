@@ -38,7 +38,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         if(authUser.getIdentifier().equals(username)) {
 
             List<GrantedAuthority> grantedAuthorities = AuthorityUtils
-                    .commaSeparatedStringToAuthorityList(authUser.getRoles());
+                    .commaSeparatedStringToAuthorityList(authUser.getAuthority());
 
             /*
                The "User" class is provided by Spring and represents a model class for user to be returned by UserDetailsService

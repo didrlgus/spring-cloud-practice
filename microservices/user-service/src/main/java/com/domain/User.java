@@ -1,15 +1,20 @@
 package com.domain;
 
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Setter
+@EntityListeners(AuditingEntityListener.class)
+@NoArgsConstructor
 @Getter
+@Setter
 @Entity
 public class User {
     @Id
@@ -26,7 +31,7 @@ public class User {
     private String password;
 
     @Column
-    private String name;
+    private String userName;
 
     @Column
     private String email;
@@ -39,5 +44,15 @@ public class User {
 
     @LastModifiedDate
     private LocalDateTime modifiedDate;
+
+    @Builder
+    public User(String authority, String identifier, String password, String userName, String email, String phone) {
+        this.authority = authority;
+        this.identifier = identifier;
+        this.password = password;
+        this.userName = userName;
+        this.email = email;
+        this.phone = phone;
+    }
 
 }
