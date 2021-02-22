@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: book-service
+  datasource:
+    url: jdbc:h2:~/book-service
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    database: H2
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+
+  h2:
+    console:
+      enabled: true
+      path: /console
+
+logging:
+  level:
+    org.hibernate.type: debug
+server:
+  port: 8082
+eureka:
+  instance:
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaultZone: http://127.0.0.1:8761/eureka  # default address

@@ -16,6 +16,10 @@ zuul:
       path: /**
       serviceId: user-service
       stripPrefix: false
+    book-service:
+      path: /**
+      serviceId: book-service
+      stripPrefix: false
 
 eureka:
   instance:
