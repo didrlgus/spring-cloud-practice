@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Map;
 
@@ -35,4 +36,10 @@ public class UserController {
         return ResponseEntity.ok(authUser);
     }
 
+    @GetMapping("/test")
+    public ResponseEntity<?> adminTest(HttpServletRequest request) {
+        String token = request.getHeader("Token");
+
+        return ResponseEntity.ok(token);
+    }
 }

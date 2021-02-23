@@ -1,9 +1,10 @@
 package com.domain;
 
+import com.dto.BookRequestDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ColumnDefault;
+import lombok.ToString;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -11,9 +12,10 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@EntityListeners(AuditingEntityListener.class)
-@NoArgsConstructor
+@ToString
 @Getter
+@NoArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 @Entity
 public class Book {
 
@@ -22,13 +24,16 @@ public class Book {
     private Long id;
 
     @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
     private String author;
 
     @Column(length = 25, nullable = false)
     private String publisher;
 
-    @Column
-    private LocalDateTime publishDate;
+    @Column(length = 20)
+    private String publishDate;
 
     @Column(length = 50)
     private String category;
@@ -54,12 +59,8 @@ public class Book {
     @Column(columnDefinition = "boolean default false", nullable = false)
     private boolean isDeleted;
 
-    @Column(nullable = false)
+    @Column
     private String etc;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private RequestStatus requestStatus;
 
     @CreatedDate
     private LocalDateTime createdDate;
@@ -68,10 +69,11 @@ public class Book {
     private LocalDateTime modifiedDate;
 
     @Builder
-    public Book(String author, String publisher, LocalDateTime publishDate, String category, String intro,
+    public Book(String title, String author, String publisher, String publishDate, String category, String intro,
                 String content, String referenceUrl, String location, String thumbnail, boolean isRent,
-                boolean isDeleted, String etc, RequestStatus requestStatus, LocalDateTime createdDate,
+                boolean isDeleted, String etc, LocalDateTime createdDate,
                 LocalDateTime modifiedDate) {
+        this.title = title;
         this.author = author;
         this.publisher = publisher;
         this.publishDate = publishDate;
@@ -84,8 +86,26 @@ public class Book {
         this.isRent = isRent;
         this.isDeleted = isDeleted;
         this.etc = etc;
-        this.requestStatus = requestStatus;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
+    }
+
+    public void update(BookRequestDto.Put bookRequestDto) {
+        this.title = bookRequestDto.getTitle();
+        this.author = bookRequestDto.getAuthor();
+        this.publisher = bookRequestDto.getPublisher();
+        this.publishDate = bookRequestDto.getPublishDate();
+        this.category = bookRequestDto.getCategory();
+        this.intro = bookRequestDto.getIntro();
+        this.content = bookRequestDto.getContent();
+        this.referenceUrl = bookRequestDto.getReferenceUrl();
+        this.location = bookRequestDto.getLocation();
+        this.thumbnail = bookRequestDto.getThumbnail();
+        this.isRent = bookRequestDto.isRent();
+        this.etc = bookRequestDto.getEtc();
+    }
+
+    public void delete() {
+        this.isDeleted = true;
     }
 }

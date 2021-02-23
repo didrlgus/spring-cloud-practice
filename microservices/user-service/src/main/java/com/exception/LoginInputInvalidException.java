@@ -6,7 +6,7 @@ import com.common.error.exception.InvalidValueException;
 public class LoginInputInvalidException extends InvalidValueException {
 
     public LoginInputInvalidException(String message) {
-        super(message, ErrorCode.LOGIN_INPUT_INVALID);
+        super(message);
     }
 
 }
