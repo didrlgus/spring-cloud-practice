@@ -1,5 +1,7 @@
 package com.service;
 
+import com.common.error.exception.EntityNotFoundException;
+import com.common.error.exception.InvalidValueException;
 import com.domain.Book;
 import com.domain.BookRepository;
 import com.dto.BookPagingResponseDto;
@@ -34,6 +36,10 @@ public class BookService {
 
     public BookPagingResponseDto getBooks(Integer page) {
         // TODO: page는 1이상, 그렇지 않으면 예외
+        if (page < 1) {
+            throw new InvalidValueException("유효하지 않은 페이지 값입니다.");
+        }
+
         Pageable pageable = PageRequest.of(getRealPage(page), 10, Sort.by(Sort.Direction.DESC, "createdDate"));
 
         Page<Book> bookPage = bookRepository.findAllByIsDeleted(false, pageable);
@@ -43,13 +49,13 @@ public class BookService {
 
     public BookResponseDto getBookDetails(Long id) {
 
-        return modelMapper.map(bookRepository.findByIdAndIsDeleted(id, false).orElseThrow(() -> new RuntimeException("책이 없습니다!")),
+        return modelMapper.map(bookRepository.findByIdAndIsDeleted(id, false).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 책입니다.")),
                 BookResponseDto.class);
     }
 
     @Transactional
     public BookResponseDto updateBook(Long id, BookRequestDto.Put bookRequestDto) {
-        Book book = bookRepository.findByIdAndIsDeleted(id, false).orElseThrow(() -> new RuntimeException("책이 없습니다!"));
+        Book book = bookRepository.findByIdAndIsDeleted(id, false).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 책입니다."));
 
         book.update(bookRequestDto);
 
@@ -58,7 +64,7 @@ public class BookService {
 
     @Transactional
     public BookResponseDto deleteBook(Long id) {
-        Book book = bookRepository.findByIdAndIsDeleted(id, false).orElseThrow(() -> new RuntimeException("책이 없습니다!"));
+        Book book = bookRepository.findByIdAndIsDeleted(id, false).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 책입니다."));
 
         book.delete();
 
