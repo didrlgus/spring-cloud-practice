@@ -2,6 +2,7 @@ package com.dto;
 
 import lombok.Getter;
 
+// TODO: 공통코드로 뺄 가능성이 있는 코드
 @Getter
 public class PageUtils {
 

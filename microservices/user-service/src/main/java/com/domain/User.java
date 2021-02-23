@@ -24,7 +24,7 @@ public class User {
     @Column
     private String authority;
 
-    @Column
+    @Column(unique = true)
     private String identifier;
 
     @Column

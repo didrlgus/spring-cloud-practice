@@ -12,7 +12,7 @@ import javax.validation.Valid;
 
 @RequiredArgsConstructor
 @RestController
-public class BookServiceController {
+public class BookController {
 
     private final BookService bookService;
 

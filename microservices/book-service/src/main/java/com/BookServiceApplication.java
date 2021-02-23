@@ -16,6 +16,7 @@ public class BookServiceApplication {
         SpringApplication.run(BookServiceApplication.class, args);
     }
 
+    // TODO: 공통코드로 뺄 가능성이 있는 코드
     @Bean
     public ModelMapper modelMapper() {
         return new ModelMapper();
