@@ -1,11 +1,12 @@
 package com.exception;
 
-import com.common.error.exception.InvalidValueException;
+import com.common.exception.BusinessException;
+import com.utils.error.ErrorMessage;
 
-public class InvalidPageValueException extends InvalidValueException {
+public class InvalidPageValueException extends BusinessException {
 
-    public InvalidPageValueException(String message) {
-        super(message);
+    public InvalidPageValueException(ErrorMessage errorMessage) {
+        super(errorMessage);
     }
 
 }

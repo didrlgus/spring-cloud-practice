@@ -1,6 +1,5 @@
-package com.common.error;
+package com.utils.error;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.validation.BindingResult;
@@ -10,35 +9,32 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class ErrorResponse {
 
-    private String code;
     private String message;
     private List<FieldError> errors;
 
-    private ErrorResponse(final ErrorCode code, final List<FieldError> errors) {
-        this.code = code.getCode();
-        this.message = code.getMessage();
+    private ErrorResponse(ErrorMessage errorMessage, final List<FieldError> errors) {
+        this.message = errorMessage.getMessage();
         this.errors = errors;
     }
 
-    private ErrorResponse(final ErrorCode code) {
-        this.code = code.getCode();
-        this.message = code.getMessage();
+    private ErrorResponse(final ErrorMessage errorMessage) {
+        this.message = errorMessage.getMessage();
         this.errors = new ArrayList<>();
     }
 
-    public static ErrorResponse of(final ErrorCode code, final BindingResult bindingResult) {
-        return new ErrorResponse(code, FieldError.of(bindingResult));
+    public static ErrorResponse of(final ErrorMessage errorMessage, final BindingResult bindingResult) {
+        return new ErrorResponse(errorMessage, FieldError.of(bindingResult));
     }
 
-    public static ErrorResponse of(final ErrorCode code) {
-        return new ErrorResponse(code);
+    public static ErrorResponse of(final ErrorMessage errorMessage) {
+        return new ErrorResponse(errorMessage);
     }
 
     @Getter
-    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    @NoArgsConstructor
     public static class FieldError {
         private String field;
         private String value;

@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -16,12 +15,10 @@ public class BookRequestDto {
     public static class Post {
         @Size(min = 1, max = 255)
         @NotNull(message = "제목은 null 일 수 없습니다.")
-        @NotBlank(message = "제목을 입력해주세요.")
         private String title;
 
         @Size(min = 1, max = 255)
-        @NotNull(message = "제목은 null 일 수 없습니다.")
-        @NotBlank(message = "저자를 입력해주세요.")
+        @NotNull(message = "저자는 null 일 수 없습니다.")
         private String author;
 
         @Size(max = 25)

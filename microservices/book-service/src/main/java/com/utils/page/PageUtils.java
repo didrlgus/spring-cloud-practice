@@ -1,4 +1,4 @@
-package com.dto;
+package com.utils.page;
 
 import lombok.Getter;
 

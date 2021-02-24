@@ -1,23 +1,28 @@
 package com.service;
 
-import com.common.error.exception.EntityNotFoundException;
-import com.common.error.exception.InvalidValueException;
+import com.common.exception.EntityNotFoundException;
 import com.domain.Book;
 import com.domain.BookRepository;
 import com.dto.BookPagingResponseDto;
 import com.dto.BookRequestDto;
 import com.dto.BookResponseDto;
-import com.dto.PageUtils;
+import com.exception.InvalidPageValueException;
+import com.utils.page.PageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.utils.error.ErrorMessage.ENTITY_NOT_FOUND;
+import static com.utils.error.ErrorMessage.INVALID_PAGE_VALUE;
 import static java.util.Objects.isNull;
 
 @Slf4j
@@ -28,6 +33,10 @@ public class BookService {
     private final BookRepository bookRepository;
     private final ModelMapper modelMapper;
 
+    private static final int MIN_PAGE_VAL = 1;
+    private static final int BOOK_PAGE_SIZE = 10;
+    private static final int BOOK_SCALE_SIZE = 10;
+
     @Transactional
     public BookResponseDto addBook(BookRequestDto.Post bookRequestDto) {
 
@@ -35,12 +44,11 @@ public class BookService {
     }
 
     public BookPagingResponseDto getBooks(Integer page) {
-        // TODO: page는 1이상, 그렇지 않으면 예외
-        if (page < 1) {
-            throw new InvalidValueException("유효하지 않은 페이지 값입니다.");
+        if (page < MIN_PAGE_VAL) {
+            throw new InvalidPageValueException(INVALID_PAGE_VALUE);
         }
 
-        Pageable pageable = PageRequest.of(getRealPage(page), 10, Sort.by(Sort.Direction.DESC, "createdDate"));
+        Pageable pageable = PageRequest.of(getRealPage(page), BOOK_PAGE_SIZE, Sort.by(Sort.Direction.DESC, "createdDate"));
 
         Page<Book> bookPage = bookRepository.findAllByIsDeleted(false, pageable);
 
@@ -49,13 +57,13 @@ public class BookService {
 
     public BookResponseDto getBookDetails(Long id) {
 
-        return modelMapper.map(bookRepository.findByIdAndIsDeleted(id, false).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 책입니다.")),
+        return modelMapper.map(bookRepository.findByIdAndIsDeleted(id, false).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND)),
                 BookResponseDto.class);
     }
 
     @Transactional
     public BookResponseDto updateBook(Long id, BookRequestDto.Put bookRequestDto) {
-        Book book = bookRepository.findByIdAndIsDeleted(id, false).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 책입니다."));
+        Book book = bookRepository.findByIdAndIsDeleted(id, false).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
 
         book.update(bookRequestDto);
 
@@ -64,7 +72,7 @@ public class BookService {
 
     @Transactional
     public BookResponseDto deleteBook(Long id) {
-        Book book = bookRepository.findByIdAndIsDeleted(id, false).orElseThrow(() -> new EntityNotFoundException("존재하지 않는 책입니다."));
+        Book book = bookRepository.findByIdAndIsDeleted(id, false).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
 
         book.delete();
 
@@ -77,7 +85,7 @@ public class BookService {
 
     private BookPagingResponseDto getBookPagingResponseDto(Page<Book> bookPage, List<BookResponseDto> bookResponseDtoList) {
         PageUtils pageUtils = new PageUtils();
-        pageUtils.setPagingInfo(bookPage.getNumber(), bookPage.getTotalPages(), 10);
+        pageUtils.setPagingInfo(bookPage.getNumber(), bookPage.getTotalPages(), BOOK_SCALE_SIZE);
 
         return BookPagingResponseDto.builder()
                 .bookResponseDtoList(bookResponseDtoList)

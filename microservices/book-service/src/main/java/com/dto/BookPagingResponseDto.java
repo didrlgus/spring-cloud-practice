@@ -1,5 +1,6 @@
 package com.dto;
 
+import com.utils.page.PageUtils;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
