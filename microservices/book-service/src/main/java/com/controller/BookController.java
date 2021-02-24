@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
+import static org.springframework.http.HttpStatus.*;
+
 @RequiredArgsConstructor
 @RestController
 public class BookController {
@@ -19,31 +21,31 @@ public class BookController {
     @PostMapping("/books")
     public ResponseEntity<BookResponseDto> addBook(@RequestBody @Valid BookRequestDto.Post bookRequestDto) {
 
-        return ResponseEntity.ok(bookService.addBook(bookRequestDto));
+        return ResponseEntity.status(CREATED).body(bookService.addBook(bookRequestDto));
     }
 
     @GetMapping("/books")
     public ResponseEntity<BookPagingResponseDto> getBooks(@RequestParam(value = "page", required = false) Integer page) {
 
-        return ResponseEntity.ok(bookService.getBooks(page));
+        return ResponseEntity.status(OK).body(bookService.getBooks(page));
     }
 
     @GetMapping("/books/{id}")
     public ResponseEntity<BookResponseDto> getBookDetails(@PathVariable("id") Long id) {
 
-        return ResponseEntity.ok(bookService.getBookDetails(id));
+        return ResponseEntity.status(OK).body(bookService.getBookDetails(id));
     }
 
     @PutMapping("/books/{id}")
     public ResponseEntity<BookResponseDto> updateBook(@PathVariable("id") Long id, @RequestBody @Valid BookRequestDto.Put bookRequestDto) {
 
-        return ResponseEntity.ok(bookService.updateBook(id, bookRequestDto));
+        return ResponseEntity.status(NO_CONTENT).body(bookService.updateBook(id, bookRequestDto));
     }
 
     @DeleteMapping("/books/{id}")
     public ResponseEntity<BookResponseDto> deleteBook(@PathVariable("id") Long id) {
 
-        return ResponseEntity.ok(bookService.deleteBook(id));
+        return ResponseEntity.status(NO_CONTENT).body(bookService.deleteBook(id));
     }
 
 }
