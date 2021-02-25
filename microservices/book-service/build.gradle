@@ -16,6 +16,7 @@ dependencies {
     compile('org.springframework.retry:spring-retry:1.2.2.RELEASE')
     compile('org.modelmapper:modelmapper:2.3.0')
     runtimeOnly 'com.h2database:h2'
+    compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }

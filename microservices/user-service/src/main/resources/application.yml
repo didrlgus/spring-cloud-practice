@@ -33,4 +33,6 @@ logging:
   level:
     org.hibernate.type: debug
 
-
+ribbon:
+  eureka:
+    enabled: true

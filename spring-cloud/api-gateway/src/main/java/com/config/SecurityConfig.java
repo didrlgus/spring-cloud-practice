@@ -17,12 +17,22 @@ import javax.servlet.http.HttpServletResponse;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtConfig jwtConfig;
-
+    private static final String[] AUTH_WHITELIST = {
+            "/swagger-resources/**",
+            "/swagger-ui.html",
+            "/v2/api-docs",
+            "/webjars/**",
+            "/swagger-ui/**",
+            "/book-service/v2/api-docs",
+            "/user-service/v2/api-docs"
+    };
     @Override
     public void configure(WebSecurity web) throws Exception {
         web
                 .ignoring()
-                .antMatchers(HttpMethod.POST, "/auth-service/auth/**");
+                .antMatchers(HttpMethod.POST, "/auth-service/auth")
+                .antMatchers(HttpMethod.POST, "/user-service/users")
+                .antMatchers(AUTH_WHITELIST);
     }
 
     @Override
@@ -36,9 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtConfig), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .antMatchers(HttpMethod.POST, jwtConfig.getUri()).permitAll()
-                .antMatchers(HttpMethod.POST, "/user-service/users").permitAll()
-                .antMatchers(HttpMethod.POST, "/user-service/admin").permitAll()
+                .antMatchers(HttpMethod.POST, "/book-service/books").hasRole("USER")
                 .antMatchers(HttpMethod.GET,"/user-service/admin").hasRole("ADMIN")
                 .anyRequest().authenticated();
     }
