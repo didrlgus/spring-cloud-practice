@@ -13,7 +13,10 @@ public enum ErrorMessage {
     HANDLE_ACCESS_DENIED("Access is Denied"),
 
     // Book Business
-    INVALID_PAGE_VALUE("유효하지 않은 페이지 값 입니다.");
+    INVALID_PAGE_VALUE("유효하지 않은 페이지 값 입니다."),
+    INVALID_IDENTIFIER_VALUE("도서를 반납할 수 없습니다."),
+    INVALID_EXTENSION_COUNT_VALUE("연장은 3회까지만 가능합니다."),
+    ALREADY_RENT("이미 대여중인 도서입니다.");
 
     private final String message;
 

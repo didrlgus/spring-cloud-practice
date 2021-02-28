@@ -32,6 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .ignoring()
                 .antMatchers(HttpMethod.POST, "/auth-service/auth")
                 .antMatchers(HttpMethod.POST, "/user-service/users")
+                .antMatchers(HttpMethod.GET, "/book-service/books/**")
                 .antMatchers(AUTH_WHITELIST);
     }
 

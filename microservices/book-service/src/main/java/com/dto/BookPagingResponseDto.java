@@ -1,6 +1,6 @@
 package com.dto;
 
-import com.utils.page.PageUtils;
+import com.utils.page.PageResponseData;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,12 +12,12 @@ import java.util.List;
 public class BookPagingResponseDto {
 
     private List<BookResponseDto> bookResponseDtoList;
-    private PageUtils pageUtils;
+    private PageResponseData pageResponseData;
 
     @Builder
-    public BookPagingResponseDto(List<BookResponseDto> bookResponseDtoList, PageUtils pageUtils) {
+    public BookPagingResponseDto(List<BookResponseDto> bookResponseDtoList, PageResponseData pageResponseData) {
         this.bookResponseDtoList = bookResponseDtoList;
-        this.pageUtils = pageUtils;
+        this.pageResponseData = pageResponseData;
     }
 
 }

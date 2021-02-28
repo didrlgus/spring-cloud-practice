@@ -6,8 +6,11 @@ import com.domain.BookRepository;
 import com.dto.BookPagingResponseDto;
 import com.dto.BookRequestDto;
 import com.dto.BookResponseDto;
+import com.exception.AlreadyRentException;
+import com.exception.ExtensionCountException;
+import com.exception.InvalidIdentifierException;
 import com.exception.InvalidPageValueException;
-import com.utils.page.PageUtils;
+import com.utils.page.PageResponseData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -21,8 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.utils.error.ErrorMessage.ENTITY_NOT_FOUND;
-import static com.utils.error.ErrorMessage.INVALID_PAGE_VALUE;
+import static com.utils.error.ErrorMessage.*;
 import static java.util.Objects.isNull;
 
 @Slf4j
@@ -79,21 +81,65 @@ public class BookService {
         return modelMapper.map(book, BookResponseDto.class);
     }
 
+    @Transactional
+    public BookResponseDto rentBook(Long id, String identifier) {
+        Book book = bookRepository.findByIdAndIsDeleted(id, false).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
+
+        if (book.isRent()) {
+            throw new AlreadyRentException(ALREADY_RENT);
+        }
+
+        book.rent(identifier);
+
+        return modelMapper.map(book, BookResponseDto.class);
+    }
+
+    @Transactional
+    public BookResponseDto returnBook(Long id, String identifier) {
+        Book book = bookRepository.findByIdAndIsDeleted(id, false).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
+
+        if (isNull(book.getIdentifier()) || !book.getIdentifier().equals(identifier)) {
+            throw new InvalidIdentifierException(INVALID_IDENTIFIER_VALUE);
+        }
+
+        book.returnBook();
+
+        return modelMapper.map(book, BookResponseDto.class);
+    }
+
+    @Transactional
+    public BookResponseDto extendRent(Long id, String identifier) {
+        Book book = bookRepository.findByIdAndIsDeleted(id, false).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
+
+        if (isNull(book.getIdentifier()) || !book.getIdentifier().equals(identifier)) {
+            throw new InvalidIdentifierException(INVALID_IDENTIFIER_VALUE);
+        }
+
+        if(book.getExtensionCount() >= 3) {
+            throw new ExtensionCountException(INVALID_EXTENSION_COUNT_VALUE);
+        }
+
+        book.extendRent();
+
+        return modelMapper.map(book, BookResponseDto.class);
+    }
+
     private List<BookResponseDto> getBookResponseDtoList(Page<Book> bookPage) {
         return bookPage.stream().map(Book -> modelMapper.map(Book, BookResponseDto.class)).collect(Collectors.toList());
     }
 
     private BookPagingResponseDto getBookPagingResponseDto(Page<Book> bookPage, List<BookResponseDto> bookResponseDtoList) {
-        PageUtils pageUtils = new PageUtils();
-        pageUtils.setPagingInfo(bookPage.getNumber(), bookPage.getTotalPages(), BOOK_SCALE_SIZE);
+        PageResponseData pageResponseData = new PageResponseData();
+        pageResponseData.setPagingInfo(bookPage.getNumber(), bookPage.getTotalPages(), BOOK_SCALE_SIZE);
 
         return BookPagingResponseDto.builder()
                 .bookResponseDtoList(bookResponseDtoList)
-                .pageUtils(pageUtils)
+                .pageResponseData(pageResponseData)
                 .build();
     }
 
     private int getRealPage(Integer page) {
         return isNull(page) ? 0 : page - 1;
     }
+
 }

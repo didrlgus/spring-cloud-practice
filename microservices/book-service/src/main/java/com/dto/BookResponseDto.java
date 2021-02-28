@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Setter
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 public class BookResponseDto {
 
     private Long id;
+    private String identifier;
     private String title;
     private String author;
     private String publisher;
@@ -25,6 +27,9 @@ public class BookResponseDto {
     private String thumbnail;
     private boolean isRent;
     private String etc;
+    private Integer extensionCount;
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    private LocalDate rentExpiredDate;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime createdDate;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")

@@ -4,7 +4,7 @@ import lombok.Getter;
 
 // TODO: 공통코드로 뺄 가능성이 있는 코드
 @Getter
-public class PageUtils {
+public class PageResponseData {
 
     private int page = 1;                   // 현재 페이지
     private int scaleStartPage = 1;         // scale 시작 페이지

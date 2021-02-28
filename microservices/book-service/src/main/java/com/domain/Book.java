@@ -10,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @ToString
@@ -22,6 +23,9 @@ public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
+    @Column
+    private String identifier;
 
     @Column(nullable = false)
     private String title;
@@ -62,6 +66,12 @@ public class Book {
     @Column
     private String etc;
 
+    @Column
+    private LocalDate rentExpiredDate;
+
+    @Column(columnDefinition = "integer default 0", nullable = false)
+    private Integer extensionCount;
+
     @CreatedDate
     private LocalDateTime createdDate;
 
@@ -71,7 +81,7 @@ public class Book {
     @Builder
     public Book(String title, String author, String publisher, String publishDate, String category, String intro,
                 String content, String referenceUrl, String location, String thumbnail, boolean isRent,
-                boolean isDeleted, String etc, LocalDateTime createdDate,
+                boolean isDeleted, String etc, Integer extensionCount, LocalDateTime createdDate,
                 LocalDateTime modifiedDate) {
         this.title = title;
         this.author = author;
@@ -86,6 +96,7 @@ public class Book {
         this.isRent = isRent;
         this.isDeleted = isDeleted;
         this.etc = etc;
+        this.extensionCount = extensionCount;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
     }
@@ -109,4 +120,21 @@ public class Book {
         this.isDeleted = true;
     }
 
+    public void rent(String identifier) {
+        this.identifier = identifier;
+        this.isRent = true;
+        this.rentExpiredDate = LocalDate.now().plusMonths(1);
+    }
+
+    public void returnBook() {
+        this.identifier = null;
+        this.isRent = false;
+        this.extensionCount = 0;
+        this.rentExpiredDate = null;
+    }
+
+    public void extendRent() {
+        this.extensionCount++;
+        this.rentExpiredDate = this.rentExpiredDate.plusMonths(1);
+    }
 }

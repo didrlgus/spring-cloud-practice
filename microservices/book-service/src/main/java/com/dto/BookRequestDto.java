@@ -75,6 +75,7 @@ public class BookRequestDto {
                     .location(this.location)
                     .thumbnail(this.thumbnail)
                     .etc(this.etc)
+                    .extensionCount(0)
                     .build();
         }
     }
