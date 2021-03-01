@@ -1,4 +1,4 @@
-package com.utils.error;
+package com.exception;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,21 +15,21 @@ public class ErrorResponse {
     private String message;
     private List<FieldError> errors;
 
-    private ErrorResponse(ErrorMessage errorMessage, final List<FieldError> errors) {
-        this.message = errorMessage.getMessage();
+    private ErrorResponse(String errorMessage, final List<FieldError> errors) {
+        this.message = errorMessage;
         this.errors = errors;
     }
 
-    private ErrorResponse(final ErrorMessage errorMessage) {
-        this.message = errorMessage.getMessage();
+    private ErrorResponse(final String errorMessage) {
+        this.message = errorMessage;
         this.errors = new ArrayList<>();
     }
 
-    public static ErrorResponse of(final ErrorMessage errorMessage, final BindingResult bindingResult) {
+    public static ErrorResponse of(final String errorMessage, final BindingResult bindingResult) {
         return new ErrorResponse(errorMessage, FieldError.of(bindingResult));
     }
 
-    public static ErrorResponse of(final ErrorMessage errorMessage) {
+    public static ErrorResponse of(final String errorMessage) {
         return new ErrorResponse(errorMessage);
     }
 

@@ -4,10 +4,9 @@ pluginManagement {
     }
 }
 rootProject.name = 'practice'
+include 'common'
 include 'microservices:auth-service'
 include 'microservices:user-service'
 include 'microservices:book-service'
 include 'spring-cloud:api-gateway'
 include 'spring-cloud:discovery-service'
-
-

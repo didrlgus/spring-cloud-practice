@@ -1,15 +1,11 @@
 package com.service;
 
-import com.common.exception.EntityNotFoundException;
 import com.domain.Book;
 import com.domain.BookRepository;
 import com.dto.BookPagingResponseDto;
 import com.dto.BookRequestDto;
 import com.dto.BookResponseDto;
-import com.exception.AlreadyRentException;
-import com.exception.ExtensionCountException;
-import com.exception.InvalidIdentifierException;
-import com.exception.InvalidPageValueException;
+import com.exception.*;
 import com.utils.page.PageResponseData;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.utils.error.ErrorMessage.*;
+import static com.exception.message.BookExceptionMessage.*;
+import static com.exception.message.CommonExceptionMessage.ENTITY_NOT_FOUND;
 import static java.util.Objects.isNull;
 
 @Slf4j

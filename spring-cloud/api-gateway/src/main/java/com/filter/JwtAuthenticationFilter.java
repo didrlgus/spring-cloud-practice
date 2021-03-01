@@ -1,8 +1,8 @@
 package com.filter;
 
 import com.config.JwtConfig;
+import com.service.JwtService;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,14 +14,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtConfig jwtConfig;
+    private final JwtService jwtService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -29,12 +28,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String header = request.getHeader(jwtConfig.getHeader());
 
-        if (isUnValidHeader(header)) {
+        if (jwtService.isUnValidHeader(header)) {
             filterChain.doFilter(request, response);                                        // go to the next filter in filter chain
             return;
         }
 
-        String jwt = header.replace(jwtConfig.getPrefix(), "");                   // remove Bearer and get pure jwt
+        String jwt = jwtService.getPureJwtInHeader(header);                                 // remove Bearer and get pure jwt
 
         try {
             authenticationWithJwt(jwt);
@@ -46,9 +45,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     public void authenticationWithJwt(String jwt) {
-        Claims claims = getClaimsFromJwt(jwt);
+        Claims claims = jwtService.getClaimsFromJwt(jwt);
 
-        String identifier = claims.getSubject();
+        String identifier = jwtService.getSubjectFromJwt(jwt);
 
         if (identifier != null) {
             setAuthenticationToContextHolder(identifier, claims);
@@ -65,30 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     public UsernamePasswordAuthenticationToken getAuthenticationToken(String identifier, Claims claims) {
         return new UsernamePasswordAuthenticationToken(identifier, null,
-                getAuthoritiesFromClaims(claims).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
-    }
-
-    public List<String> getAuthoritiesFromClaims(Claims claims) {
-        String authoritiesStr = String.valueOf(claims.get("authorities"));
-
-        authoritiesStr = authoritiesStr.substring(1, authoritiesStr.length() - 1);
-
-        return Arrays.asList(authoritiesStr.split(","));
-    }
-
-    public boolean isUnValidHeader(String header) {
-        return header == null || isNotStartBearer(header);
-    }
-
-    public boolean isNotStartBearer(String header) {
-        return !header.startsWith(jwtConfig.getPrefix());
-    }
-
-    public Claims getClaimsFromJwt(String jwt) {
-        return Jwts.parser()                                                                // check expired time
-                .setSigningKey(jwtConfig.getSecret().getBytes())
-                .parseClaimsJws(jwt)
-                .getBody();
+                jwtService.getAuthoritiesFromClaims(claims).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
     }
 
 }
