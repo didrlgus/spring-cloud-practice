@@ -13,7 +13,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Configuration
-public class SwaggerConfig {
+public class SwaggerCommonConfig {
 
     private final ZuulProperties properties;
 

@@ -1,18 +1,19 @@
 package com.controller;
 
-import com.config.JwtConfig;
 import com.dto.BookPagingResponseDto;
 import com.dto.BookRequestDto;
 import com.dto.BookResponseDto;
+import com.dto.ReviewRequestDto;
 import com.service.BookService;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
+import com.service.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+
+import java.nio.file.AccessDeniedException;
 
 import static org.springframework.http.HttpStatus.*;
 
@@ -21,7 +22,7 @@ import static org.springframework.http.HttpStatus.*;
 public class BookController {
 
     private final BookService bookService;
-    private final JwtConfig jwtConfig;
+    private final JwtService jwtService;
 
     @PostMapping("/books")
     public ResponseEntity<BookResponseDto> addBook(@RequestBody @Valid BookRequestDto.Post bookRequestDto) {
@@ -54,45 +55,33 @@ public class BookController {
     }
 
     @PutMapping("/books/{id}/rent")
-    public ResponseEntity<BookResponseDto> rentBook(@PathVariable("id") Long id, HttpServletRequest request) {
-        String token = request.getHeader("Token");
-        String jwt = token.replace("Bearer ", "");
+    public ResponseEntity<BookResponseDto> rentBook(@PathVariable("id") Long id, HttpServletRequest request) throws AccessDeniedException {
+        String jwt = jwtService.getJwtFromHeader(request);
 
-        Claims claims = getClaimsFromJwt(jwt);
-
-        String identifier = claims.getSubject();
-
-        return ResponseEntity.ok(bookService.rentBook(id, identifier));
+        return ResponseEntity.ok(bookService.rentBook(id, jwtService.getIdentifierFromJwt(jwt)));
     }
 
     @PutMapping("/books/{id}/return")
-    public ResponseEntity<BookResponseDto> returnBook(@PathVariable("id") Long id, HttpServletRequest request) {
-        String token = request.getHeader("Token");
-        String jwt = token.replace("Bearer ", "");
+    public ResponseEntity<BookResponseDto> returnBook(@PathVariable("id") Long id, HttpServletRequest request) throws AccessDeniedException {
+        String jwt = jwtService.getJwtFromHeader(request);
 
-        Claims claims = getClaimsFromJwt(jwt);
-
-        String identifier = claims.getSubject();
-
-        return ResponseEntity.ok(bookService.returnBook(id, identifier));
+        return ResponseEntity.ok(bookService.returnBook(id, jwtService.getIdentifierFromJwt(jwt)));
     }
 
     @PutMapping("/books/{id}/extension")
-    public ResponseEntity<BookResponseDto> extendRent(@PathVariable("id") Long id, HttpServletRequest request) {
-        String token = request.getHeader("Token");
-        String jwt = token.replace("Bearer ", "");
+    public ResponseEntity<BookResponseDto> extendRent(@PathVariable("id") Long id, HttpServletRequest request) throws AccessDeniedException {
+        String jwt = jwtService.getJwtFromHeader(request);
 
-        Claims claims = getClaimsFromJwt(jwt);
-
-        String identifier = claims.getSubject();
-
-        return ResponseEntity.ok(bookService.extendRent(id, identifier));
+        return ResponseEntity.ok(bookService.extendRent(id, jwtService.getIdentifierFromJwt(jwt)));
     }
 
-    public Claims getClaimsFromJwt(String jwt) {
-        return Jwts.parser()                                                                // check expired time
-                .setSigningKey(jwtConfig.getSecret().getBytes())
-                .parseClaimsJws(jwt)
-                .getBody();
+    @PatchMapping("/books/{id}/reviews")
+    public ResponseEntity<?> addReview(@PathVariable("id") Long id, @RequestBody ReviewRequestDto reviewRequestDto) {
+
+        System.out.println(id);
+        System.out.println(reviewRequestDto);
+
+        return ResponseEntity.ok("success!!");
     }
+
 }

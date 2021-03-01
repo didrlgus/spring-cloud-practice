@@ -17,6 +17,9 @@ zuul:
     book-service:
       path: /books/**
       serviceId: book-service
+    review-service:
+      path: /reviews/**
+      serviceId: review-service
 
 ribbon:
   ReadTimeout: 60000

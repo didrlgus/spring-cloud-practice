@@ -1,8 +1,6 @@
 package com.exception;
 
-import com.common.error.exception.InvalidValueException;
-
-public class IdentifierDuplicateException extends InvalidValueException {
+public class IdentifierDuplicateException extends BusinessException {
 
     public IdentifierDuplicateException(String message) {
         super(message);

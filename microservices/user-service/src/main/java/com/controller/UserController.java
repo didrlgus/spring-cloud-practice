@@ -1,10 +1,9 @@
 package com.controller;
 
-import com.common.error.ErrorCode;
-import com.common.error.exception.EntityNotFoundException;
 import com.domain.User;
 import com.domain.UserRepository;
 import com.dto.users.UserAddRequestDto;
+import com.exception.EntityNotFoundException;
 import com.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Map;
+
+import static com.exception.message.CommonExceptionMessage.ENTITY_NOT_FOUND;
 
 @RequiredArgsConstructor
 @RestController
@@ -31,7 +32,7 @@ public class UserController {
     public ResponseEntity<User> getUser(@RequestParam("identifier") String identifier) {
 
         User authUser = userRepository.findByIdentifier(identifier)
-                .orElseThrow(() -> new EntityNotFoundException(ErrorCode.ENTITY_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
 
         return ResponseEntity.ok(authUser);
     }

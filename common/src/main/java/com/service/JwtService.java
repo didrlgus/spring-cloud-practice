@@ -6,6 +6,8 @@ import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
+import java.nio.file.AccessDeniedException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -47,6 +49,20 @@ public class JwtService {
         authoritiesStr = authoritiesStr.substring(1, authoritiesStr.length() - 1);
 
         return Arrays.asList(authoritiesStr.split(","));
+    }
+
+    public String getJwtFromHeader(HttpServletRequest request) throws AccessDeniedException {
+        String token = request.getHeader(jwtConfig.getHeader());
+
+        if(isUnValidHeader(token)) {
+            throw new AccessDeniedException("유효하지 않은 토큰입니다.");
+        }
+
+        return getPureJwtInHeader(token);
+    }
+
+    public String getIdentifierFromJwt(String jwt) {
+        return getSubjectFromJwt(jwt);
     }
 
 }

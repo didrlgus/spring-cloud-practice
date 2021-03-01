@@ -36,3 +36,11 @@ logging:
 ribbon:
   eureka:
     enabled: true
+
+security:
+  jwt:
+    uri: /auth/**
+    header: Token
+    prefix: Bearer
+    expiration: 86400 # 24*60*60
+    secret: JwtSecretKey

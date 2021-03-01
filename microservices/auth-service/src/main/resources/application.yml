@@ -22,7 +22,6 @@ eureka:
 
 user-service:
   ribbon:
-#    listOfServers: localhost:8081,localhost:8082
     MaxAutoRetries: 0
     MaxAutoRetriesNextServer: 1
 

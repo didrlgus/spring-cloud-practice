@@ -1,6 +1,5 @@
 package com.service;
 
-import com.common.error.ErrorCode;
 import com.domain.User;
 import com.domain.UserRepository;
 import com.dto.users.UserAddRequestDto;
@@ -24,7 +23,7 @@ public class UserService {
         long count = userRepository.countByIdentifier(userAddRequestDto.getIdentifier());
 
         if (count >= 1L) {
-            throw new IdentifierDuplicateException(ErrorCode.IDENTIFIER_DUPLICATION.getMessage());
+            throw new IdentifierDuplicateException("현재 사용중인 아이디 입니다.");
         }
 
         User newUser = userRepository.save(User.builder()
