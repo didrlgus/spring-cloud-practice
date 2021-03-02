@@ -5,7 +5,7 @@ import com.dto.BookRequestDto;
 import com.dto.BookResponseDto;
 import com.dto.ReviewRequestDto;
 import com.service.BookService;
-import com.service.JwtService;
+import com.utils.jwt.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,57 +22,57 @@ import static org.springframework.http.HttpStatus.*;
 public class BookController {
 
     private final BookService bookService;
-    private final JwtService jwtService;
+    private final JwtUtils jwtUtils;
 
     @PostMapping("/books")
     public ResponseEntity<BookResponseDto> addBook(@RequestBody @Valid BookRequestDto.Post bookRequestDto) {
 
-        return ResponseEntity.status(CREATED).body(bookService.addBook(bookRequestDto));
+        return ResponseEntity.ok(bookService.addBook(bookRequestDto));
     }
 
     @GetMapping("/books")
     public ResponseEntity<BookPagingResponseDto> getBooks(@RequestParam(value = "page", required = false) Integer page) {
 
-        return ResponseEntity.status(OK).body(bookService.getBooks(page));
+        return ResponseEntity.ok(bookService.getBooks(page));
     }
 
     @GetMapping("/books/{id}")
     public ResponseEntity<BookResponseDto> getBookDetails(@PathVariable("id") Long id) {
 
-        return ResponseEntity.status(OK).body(bookService.getBookDetails(id));
+        return ResponseEntity.ok(bookService.getBookDetails(id));
     }
 
     @PutMapping("/books/{id}")
     public ResponseEntity<BookResponseDto> updateBook(@PathVariable("id") Long id, @RequestBody @Valid BookRequestDto.Put bookRequestDto) {
 
-        return ResponseEntity.status(NO_CONTENT).body(bookService.updateBook(id, bookRequestDto));
+        return ResponseEntity.ok(bookService.updateBook(id, bookRequestDto));
     }
 
     @DeleteMapping("/books/{id}")
     public ResponseEntity<BookResponseDto> deleteBook(@PathVariable("id") Long id) {
 
-        return ResponseEntity.status(NO_CONTENT).body(bookService.deleteBook(id));
+        return ResponseEntity.ok(bookService.deleteBook(id));
     }
 
     @PutMapping("/books/{id}/rent")
     public ResponseEntity<BookResponseDto> rentBook(@PathVariable("id") Long id, HttpServletRequest request) throws AccessDeniedException {
-        String jwt = jwtService.getJwtFromHeader(request);
+        String jwt = jwtUtils.getJwtFromRequest(request);
 
-        return ResponseEntity.ok(bookService.rentBook(id, jwtService.getIdentifierFromJwt(jwt)));
-    }
-
-    @PutMapping("/books/{id}/return")
-    public ResponseEntity<BookResponseDto> returnBook(@PathVariable("id") Long id, HttpServletRequest request) throws AccessDeniedException {
-        String jwt = jwtService.getJwtFromHeader(request);
-
-        return ResponseEntity.ok(bookService.returnBook(id, jwtService.getIdentifierFromJwt(jwt)));
+        return ResponseEntity.ok(bookService.rentBook(id, jwtUtils.getIdentifierFromJwt(jwt)));
     }
 
     @PutMapping("/books/{id}/extension")
     public ResponseEntity<BookResponseDto> extendRent(@PathVariable("id") Long id, HttpServletRequest request) throws AccessDeniedException {
-        String jwt = jwtService.getJwtFromHeader(request);
+        String jwt = jwtUtils.getJwtFromRequest(request);
 
-        return ResponseEntity.ok(bookService.extendRent(id, jwtService.getIdentifierFromJwt(jwt)));
+        return ResponseEntity.ok(bookService.extendRent(id, jwtUtils.getIdentifierFromJwt(jwt)));
+    }
+
+    @PutMapping("/books/{id}/return")
+    public ResponseEntity<BookResponseDto> returnBook(@PathVariable("id") Long id, HttpServletRequest request) throws AccessDeniedException {
+        String jwt = jwtUtils.getJwtFromRequest(request);
+
+        return ResponseEntity.ok(bookService.returnBook(id, jwtUtils.getIdentifierFromJwt(jwt)));
     }
 
     @PatchMapping("/books/{id}/reviews")

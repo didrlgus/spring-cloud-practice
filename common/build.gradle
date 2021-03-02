@@ -8,6 +8,7 @@ jar {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    compile('org.springframework.boot:spring-boot-starter-data-jpa')
     compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
     compile('org.modelmapper:modelmapper:2.3.0')
     compile group: 'io.springfox', name: 'springfox-swagger2', version: '2.9.2'

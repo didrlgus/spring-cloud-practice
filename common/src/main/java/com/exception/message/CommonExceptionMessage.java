@@ -9,4 +9,8 @@ public class CommonExceptionMessage {
     public static final String HANDLE_ACCESS_DENIED = "Access is Denied";
     public static final String HANDLE_METHOD_ARGUMENT_TYPE_MISMATCH = "Method argument type mismatch";
 
+    // Common Business exception message
+    public static final String INVALID_PAGE_VALUE = "유효하지 않은 페이지 값 입니다.";
+
 }
+

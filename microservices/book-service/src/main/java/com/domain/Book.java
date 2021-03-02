@@ -25,7 +25,7 @@ public class Book {
     private Long id;
 
     @Column
-    private String identifier;
+    private String identifier;      // 유저 아이디
 
     @Column(nullable = false)
     private String title;
@@ -126,15 +126,15 @@ public class Book {
         this.rentExpiredDate = LocalDate.now().plusMonths(1);
     }
 
+    public void extendRent() {
+        this.extensionCount++;
+        this.rentExpiredDate = this.rentExpiredDate.plusMonths(1);
+    }
+
     public void returnBook() {
         this.identifier = null;
         this.isRent = false;
         this.extensionCount = 0;
         this.rentExpiredDate = null;
-    }
-
-    public void extendRent() {
-        this.extensionCount++;
-        this.rentExpiredDate = this.rentExpiredDate.plusMonths(1);
     }
 }

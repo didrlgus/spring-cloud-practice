@@ -1,7 +1,7 @@
 package com.config;
 
 import com.filter.JwtAuthenticationFilter;
-import com.service.JwtService;
+import com.utils.jwt.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtConfig jwtConfig;
-    private final JwtService jwtService;
+    private final JwtUtils jwtUtils;
 
     private static final String[] AUTH_WHITELIST = {
             "/swagger-resources/**",
@@ -48,7 +48,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling()
                 .authenticationEntryPoint((request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
                 .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtConfig, jwtService), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthenticationFilter(jwtConfig, jwtUtils), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/book-service/books").hasRole("USER")
                 .antMatchers(HttpMethod.GET,"/user-service/admin").hasRole("ADMIN")

@@ -1,6 +1,7 @@
 package com.dto;
 
 import com.domain.Book;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,8 @@ import javax.validation.constraints.Size;
 public class BookRequestDto {
 
     @Getter
+    @Builder
+    @AllArgsConstructor
     @NoArgsConstructor
     public static class Post {
         @Size(min = 1, max = 255)
@@ -46,22 +49,6 @@ public class BookRequestDto {
         @Size(max = 255)
         private String etc;
 
-        @Builder
-        public Post(String title, String author, String publisher, String publishDate, String category,
-                    String intro, String content, String referenceUrl, String location, String thumbnail, String etc) {
-            this.title = title;
-            this.author = author;
-            this.publisher = publisher;
-            this.publishDate = publishDate;
-            this.category = category;
-            this.intro = intro;
-            this.content = content;
-            this.referenceUrl = referenceUrl;
-            this.location = location;
-            this.thumbnail = thumbnail;
-            this.etc = etc;
-        }
-
         public Book toEntity() {
             return Book.builder()
                     .title(this.title)
@@ -75,12 +62,16 @@ public class BookRequestDto {
                     .location(this.location)
                     .thumbnail(this.thumbnail)
                     .etc(this.etc)
+                    .isRent(false)
+                    .isDeleted(false)
                     .extensionCount(0)
                     .build();
         }
     }
 
     @Getter
+    @Builder
+    @AllArgsConstructor
     @NoArgsConstructor
     public static class Put {
         @Size(min = 1, max = 255)
@@ -118,21 +109,6 @@ public class BookRequestDto {
         @Size(max = 255)
         private String etc;
 
-        public Put(String title, String author, String publisher, String publishDate, String category, String intro, String content,
-                   String referenceUrl, String location, String thumbnail, boolean isRent, String etc) {
-            this.title = title;
-            this.author = author;
-            this.publisher = publisher;
-            this.publishDate = publishDate;
-            this.category = category;
-            this.intro = intro;
-            this.content = content;
-            this.referenceUrl = referenceUrl;
-            this.location = location;
-            this.thumbnail = thumbnail;
-            this.isRent = isRent;
-            this.etc = etc;
-        }
     }
 
 }

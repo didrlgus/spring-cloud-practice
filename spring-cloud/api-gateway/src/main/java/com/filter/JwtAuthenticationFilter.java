@@ -1,7 +1,7 @@
 package com.filter;
 
 import com.config.JwtConfig;
-import com.service.JwtService;
+import com.utils.jwt.JwtUtils;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtConfig jwtConfig;
-    private final JwtService jwtService;
+    private final JwtUtils jwtUtils;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -28,12 +28,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String header = request.getHeader(jwtConfig.getHeader());
 
-        if (jwtService.isUnValidHeader(header)) {
+        if (jwtUtils.isUnValidHeader(header)) {
             filterChain.doFilter(request, response);                                        // go to the next filter in filter chain
             return;
         }
 
-        String jwt = jwtService.getPureJwtInHeader(header);                                 // remove Bearer and get pure jwt
+        String jwt = jwtUtils.getPureJwtInHeader(header);                                 // remove Bearer and get pure jwt
 
         try {
             authenticationWithJwt(jwt);
@@ -45,9 +45,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     public void authenticationWithJwt(String jwt) {
-        Claims claims = jwtService.getClaimsFromJwt(jwt);
+        Claims claims = jwtUtils.getClaimsFromJwt(jwt);
 
-        String identifier = jwtService.getSubjectFromJwt(jwt);
+        String identifier = jwtUtils.getSubjectFromJwt(jwt);
 
         if (identifier != null) {
             setAuthenticationToContextHolder(identifier, claims);
@@ -64,7 +64,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     public UsernamePasswordAuthenticationToken getAuthenticationToken(String identifier, Claims claims) {
         return new UsernamePasswordAuthenticationToken(identifier, null,
-                jwtService.getAuthoritiesFromClaims(claims).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
+                jwtUtils.getAuthoritiesFromClaims(claims).stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
     }
 
 }

@@ -1,4 +1,4 @@
-package com.service;
+package com.utils.jwt;
 
 import com.config.JwtConfig;
 import io.jsonwebtoken.Claims;
@@ -10,23 +10,22 @@ import javax.servlet.http.HttpServletRequest;
 import java.nio.file.AccessDeniedException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
-public class JwtService {
+public class JwtUtils {
 
     private final JwtConfig jwtConfig;
 
     public boolean isUnValidHeader(String header) {
-        return header == null || isNotStartBearer(header);
+        return Optional.ofNullable(header)
+                .map(val -> !val.startsWith(jwtConfig.getPrefix()))
+                .orElse(true);
     }
 
     public String getPureJwtInHeader(String header) {
         return header.replace(jwtConfig.getPrefix(), "");
-    }
-
-    public boolean isNotStartBearer(String header) {
-        return !header.startsWith(jwtConfig.getPrefix());
     }
 
     public Claims getClaimsFromJwt(String jwt) {
@@ -51,7 +50,7 @@ public class JwtService {
         return Arrays.asList(authoritiesStr.split(","));
     }
 
-    public String getJwtFromHeader(HttpServletRequest request) throws AccessDeniedException {
+    public String getJwtFromRequest(HttpServletRequest request) throws AccessDeniedException {
         String token = request.getHeader(jwtConfig.getHeader());
 
         if(isUnValidHeader(token)) {

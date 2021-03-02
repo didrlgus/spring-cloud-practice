@@ -2,7 +2,7 @@ package com.controller;
 
 import com.dto.ReviewRequestDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.service.JwtService;
+import com.utils.jwt.JwtUtils;
 import com.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,16 +17,16 @@ import java.nio.file.AccessDeniedException;
 @RestController
 public class ReviewController {
 
-    private final JwtService jwtService;
+    private final JwtUtils jwtUtils;
     private final ReviewService reviewService;
 
     @PostMapping("/reviews")
     public ResponseEntity<?> addReview(@RequestBody ReviewRequestDto.Post reviewRequestDto, HttpServletRequest request)
             throws AccessDeniedException, JsonProcessingException {
 
-        String jwt = jwtService.getJwtFromHeader(request);
+        String jwt = jwtUtils.getJwtFromRequest(request);
 
-        reviewService.addReview(reviewRequestDto, jwtService.getIdentifierFromJwt(jwt));
+        reviewService.addReview(reviewRequestDto, jwtUtils.getIdentifierFromJwt(jwt));
 
         return null;
     }
