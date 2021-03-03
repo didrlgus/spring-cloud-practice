@@ -65,6 +65,8 @@ public class BookRequestDto {
                     .isRent(false)
                     .isDeleted(false)
                     .extensionCount(0)
+                    .totalRating(0)
+                    .reviewCount(0)
                     .build();
         }
     }

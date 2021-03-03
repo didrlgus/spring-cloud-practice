@@ -26,31 +26,23 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
         ResponseEntity<UserCredentials> entity = getAuthUserEntityByUsername(username);
 
-        UserCredentials authUser = entity.getBody();
+        UserCredentials userCredentials = entity.getBody();
 
-        if(isNull(authUser)) {
+        if(isNull(userCredentials) || !userCredentials.getIdentifier().equals(username)) {
             throw new UsernameNotFoundException("Username: " + username + " not found");
         }
 
-        if(authUser.getIdentifier().equals(username)) {
-
-            List<GrantedAuthority> grantedAuthorities = AuthorityUtils
-                    .commaSeparatedStringToAuthorityList(authUser.getAuthority());
-
-            /*
-               The "User" class is provided by Spring and represents a model class for user to be returned by UserDetailsService
-               And used by auth manager to verify and check user authentication.
-             */
-            return new User(authUser.getIdentifier(), authUser.getPassword(), grantedAuthorities);
-        }
-
-        throw new UsernameNotFoundException("Username: " + username + " not found");
+        return new User(userCredentials.getIdentifier(), userCredentials.getPassword(), getAuthorityList(userCredentials));
     }
 
     public ResponseEntity<UserCredentials> getAuthUserEntityByUsername(String username) {
         return restTemplate.getForEntity(GET_AUTH_USER_URL + username, UserCredentials.class);
     }
+
+    public List<GrantedAuthority> getAuthorityList(UserCredentials authUser) {
+        return AuthorityUtils.commaSeparatedStringToAuthorityList(authUser.getAuthority());
+    }
+
 }

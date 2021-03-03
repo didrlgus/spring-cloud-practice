@@ -10,14 +10,10 @@ import org.springframework.web.client.RestTemplate;
 public class ApiConfig {
 
     @LoadBalanced
-    @Bean(name = "restTemplate")
+    @Bean
     public RestTemplate restTemplate() {
-        return new RestTemplate();
+        return new RestTemplate(new HttpComponentsClientHttpRequestFactory());
     }
-
-    @LoadBalanced
-    @Bean(name = "restTemplateForPutAndPatch")
-    public RestTemplate restTemplateForPutAndPatch() { return new RestTemplate(new HttpComponentsClientHttpRequestFactory()); }
 
 }
 

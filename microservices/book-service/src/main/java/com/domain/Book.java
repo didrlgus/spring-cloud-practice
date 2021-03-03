@@ -1,10 +1,8 @@
 package com.domain;
 
 import com.dto.BookRequestDto;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import com.dto.ReviewRequestDto;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -15,6 +13,8 @@ import java.time.LocalDateTime;
 
 @ToString
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Entity
@@ -72,34 +72,17 @@ public class Book {
     @Column(columnDefinition = "integer default 0", nullable = false)
     private Integer extensionCount;
 
+    @Column(columnDefinition = "integer default 0", nullable = false)
+    private Integer totalRating;
+
+    @Column(columnDefinition = "integer default 0", nullable = false)
+    private Integer reviewCount;
+
     @CreatedDate
     private LocalDateTime createdDate;
 
     @LastModifiedDate
     private LocalDateTime modifiedDate;
-
-    @Builder
-    public Book(String title, String author, String publisher, String publishDate, String category, String intro,
-                String content, String referenceUrl, String location, String thumbnail, boolean isRent,
-                boolean isDeleted, String etc, Integer extensionCount, LocalDateTime createdDate,
-                LocalDateTime modifiedDate) {
-        this.title = title;
-        this.author = author;
-        this.publisher = publisher;
-        this.publishDate = publishDate;
-        this.category = category;
-        this.intro = intro;
-        this.content = content;
-        this.referenceUrl = referenceUrl;
-        this.location = location;
-        this.thumbnail = thumbnail;
-        this.isRent = isRent;
-        this.isDeleted = isDeleted;
-        this.etc = etc;
-        this.extensionCount = extensionCount;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
-    }
 
     public void update(BookRequestDto.Put bookRequestDto) {
         this.title = bookRequestDto.getTitle();
@@ -136,5 +119,10 @@ public class Book {
         this.isRent = false;
         this.extensionCount = 0;
         this.rentExpiredDate = null;
+    }
+
+    public void addReviewRating(ReviewRequestDto reviewRequestDto) {
+        this.totalRating = this.totalRating + reviewRequestDto.getRating();
+        this.reviewCount++;
     }
 }

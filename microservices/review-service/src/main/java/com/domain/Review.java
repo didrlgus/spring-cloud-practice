@@ -25,8 +25,8 @@ public class Review {
     @Column(nullable = false)
     private Long bookId;
 
-    @Column(nullable = false)
-    private String identifier;
+    @Column(length = 25, nullable = false)
+    private String identifier;                              // 유저 아이디
 
     @Column(nullable = false)
     private String title;

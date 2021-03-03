@@ -5,6 +5,7 @@ import com.domain.BookRepository;
 import com.dto.BookPagingResponseDto;
 import com.dto.BookRequestDto;
 import com.dto.BookResponseDto;
+import com.dto.ReviewRequestDto;
 import com.exception.*;
 import com.utils.page.PageUtils;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 import static com.exception.message.BookExceptionMessage.*;
 import static com.exception.message.CommonExceptionMessage.ENTITY_NOT_FOUND;
 import static com.exception.message.CommonExceptionMessage.INVALID_PAGE_VALUE;
+import static java.lang.Math.round;
 import static java.util.Objects.isNull;
 
 @Slf4j
@@ -139,4 +141,15 @@ public class BookService {
                 .orElse(true);
     }
 
+    @Transactional
+    public BookResponseDto addReviewRating(Long bookId, ReviewRequestDto reviewRequestDto) {
+        Book book = bookRepository.findByIdAndIsDeleted(bookId, false).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
+
+        book.addReviewRating(reviewRequestDto);
+
+        BookResponseDto bookResponseDto = modelMapper.map(book, BookResponseDto.class);
+        bookResponseDto.setAvgReviewRating((int) round((double) book.getTotalRating() / book.getReviewCount()));
+
+        return bookResponseDto;
+    }
 }

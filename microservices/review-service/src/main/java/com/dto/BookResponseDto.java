@@ -5,13 +5,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Setter
 @Getter
 @NoArgsConstructor
-public class BookResponseDto {
+public class BookResponseDto implements Serializable {
 
     private Long id;
     private String identifier;
@@ -37,4 +38,11 @@ public class BookResponseDto {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     private LocalDateTime modifiedDate;
 
+    public ReviewResponseDto toReviewResponseDto(String reviewIdentifier) {
+        return ReviewResponseDto.builder()
+                .identifier(reviewIdentifier)
+                .reviewCount(this.reviewCount)
+                .avgReviewRating(this.avgReviewRating)
+                .build();
+    }
 }

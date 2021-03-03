@@ -15,9 +15,6 @@ public class ReviewRequestDto {
     @Getter
     @NoArgsConstructor
     public static class Post {
-        @NotNull(message = "책 id는 null일 수 없습니다.")
-        private Long bookId;
-
         @Size(min = 1, max = 255)
         @NotNull(message = "제목은 null일 수 없습니다.")
         private String title;
@@ -31,16 +28,15 @@ public class ReviewRequestDto {
         private String content;
 
         @Builder
-        public Post(Long bookId, String title, Integer rating, String content) {
-            this.bookId = bookId;
+        public Post(String title, Integer rating, String content) {
             this.title = title;
             this.rating = rating;
             this.content = content;
         }
 
-        public Review toEntity(String identifier) {
+        public Review toEntity(Long bookId, String identifier) {
             return Review.builder()
-                    .bookId(this.bookId)
+                    .bookId(bookId)
                     .title(this.title)
                     .identifier(identifier)
                     .rating(this.rating)

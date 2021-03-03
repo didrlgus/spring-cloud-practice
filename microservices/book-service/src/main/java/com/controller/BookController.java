@@ -15,8 +15,6 @@ import javax.validation.Valid;
 
 import java.nio.file.AccessDeniedException;
 
-import static org.springframework.http.HttpStatus.*;
-
 @RequiredArgsConstructor
 @RestController
 public class BookController {
@@ -75,13 +73,10 @@ public class BookController {
         return ResponseEntity.ok(bookService.returnBook(id, jwtUtils.getIdentifierFromJwt(jwt)));
     }
 
-    @PatchMapping("/books/{id}/reviews")
-    public ResponseEntity<?> addReview(@PathVariable("id") Long id, @RequestBody ReviewRequestDto reviewRequestDto) {
+    @PutMapping("/books/{id}/reviews")
+    public ResponseEntity<BookResponseDto> addReviewRating(@PathVariable("id") Long bookId, @RequestBody ReviewRequestDto reviewRequestDto) {
 
-        System.out.println(id);
-        System.out.println(reviewRequestDto);
-
-        return ResponseEntity.ok("success!!");
+        return ResponseEntity.ok(bookService.addReviewRating(bookId, reviewRequestDto));
     }
 
 }
