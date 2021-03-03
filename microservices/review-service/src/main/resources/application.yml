@@ -1,3 +1,6 @@
+server:
+  port: 8005
+
 spring:
   application:
     name: review-service
@@ -21,14 +24,13 @@ spring:
 logging:
   level:
     org.hibernate.type: debug
-server:
-  port: 8083
+
 eureka:
   instance:
     prefer-ip-address: true
   client:
     service-url:
-      defaultZone: http://127.0.0.1:8761/eureka  # default address
+      defaultZone: http://127.0.0.1:8000/eureka  # default address
 
 ribbon:
   eureka:

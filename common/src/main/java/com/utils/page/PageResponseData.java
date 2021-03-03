@@ -9,8 +9,8 @@ public class PageResponseData {
     private int scaleStartPage = 1;         // scale 시작 페이지
     private int scaleEndPage = 1;           // scale 끝 페이지
     private int totalPage = 1;              // 전체 페이지 수
-    private int prevPage = 0;               // 이전 페이지 ('<<' 버튼 클릭 시)
-    private int nextPage = 0;               // 다음 페이지 ('>>' 버튼 클릭 시)
+    private Integer prevPage;               // 이전 페이지 ('<<' 버튼 클릭 시)
+    private Integer nextPage;               // 다음 페이지 ('>>' 버튼 클릭 시)
 
     public void setPagingInfo(int pageNumber, int totalPage, int scaleSize) {
         this.page = pageNumber + 1;
@@ -24,8 +24,8 @@ public class PageResponseData {
 
         this.scaleStartPage = startPage;
         this.scaleEndPage = endPage;
-        this.prevPage = startPage - 1;
-        this.nextPage = endPage + 1;
+        this.prevPage = (startPage - 1) > 0 ? (startPage - 1) : null;
+        this.nextPage = (endPage + 1) <= totalPage ? (endPage + 1) : null;
         this.totalPage = totalPage;
     }
 

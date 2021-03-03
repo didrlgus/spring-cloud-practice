@@ -1,5 +1,5 @@
 server:
-  port: 8762
+  port: 8001
 
 spring:
   application:
@@ -33,7 +33,7 @@ eureka:
     prefer-ip-address: true
   client:
     serviceUrl:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: http://localhost:8000/eureka/
 
 security:
   jwt:
