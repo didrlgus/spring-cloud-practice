@@ -1,9 +1,6 @@
 package com.controller;
 
-import com.dto.BookPagingResponseDto;
-import com.dto.BookRequestDto;
-import com.dto.BookResponseDto;
-import com.dto.ReviewRequestDto;
+import com.dto.*;
 import com.service.BookService;
 import com.utils.jwt.JwtUtils;
 import lombok.RequiredArgsConstructor;
@@ -74,9 +71,11 @@ public class BookController {
     }
 
     @PutMapping("/books/{id}/reviews")
-    public ResponseEntity<BookResponseDto> addReviewRating(@PathVariable("id") Long bookId, @RequestBody ReviewRequestDto reviewRequestDto) {
+    public ResponseEntity<ReviewResponseDto> addReviewRating(@PathVariable("id") Long bookId, @RequestBody ReviewRequestDto reviewRequestDto,
+                                                             HttpServletRequest request) throws AccessDeniedException {
+        String jwt = jwtUtils.getJwtFromRequest(request);
 
-        return ResponseEntity.ok(bookService.addReviewRating(bookId, reviewRequestDto));
+        return ResponseEntity.ok(bookService.addReviewRating(bookId, reviewRequestDto, jwtUtils.getIdentifierFromJwt(jwt)));
     }
 
 }

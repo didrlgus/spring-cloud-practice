@@ -25,7 +25,7 @@ public class ReviewController {
 
         String jwt = jwtUtils.getJwtFromRequest(request);
 
-        return ResponseEntity.ok(reviewService.addReview(bookId, reviewRequestDto, jwtUtils.getIdentifierFromJwt(jwt)));
+        return ResponseEntity.ok(reviewService.addReview(bookId, reviewRequestDto, jwt));
     }
 
 }

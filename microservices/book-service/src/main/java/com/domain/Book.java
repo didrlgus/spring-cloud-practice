@@ -2,6 +2,7 @@ package com.domain;
 
 import com.dto.BookRequestDto;
 import com.dto.ReviewRequestDto;
+import com.dto.ReviewResponseDto;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -10,6 +11,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import static java.lang.Math.round;
 
 @ToString
 @Getter
@@ -124,5 +127,13 @@ public class Book {
     public void addReviewRating(ReviewRequestDto reviewRequestDto) {
         this.totalRating = this.totalRating + reviewRequestDto.getRating();
         this.reviewCount++;
+    }
+
+    public ReviewResponseDto toReviewResponseDto(String reviewIdentifier) {
+        return ReviewResponseDto.builder()
+                .identifier(reviewIdentifier)
+                .avgReviewRating((int) round((double) this.getTotalRating() / this.getReviewCount()))
+                .reviewCount(reviewCount)
+                .build();
     }
 }

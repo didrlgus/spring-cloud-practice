@@ -1,8 +1,8 @@
 package com.service;
 
-import com.domain.Review;
+import com.config.JwtConfig;
 import com.domain.ReviewRepository;
-import com.dto.BookResponseDto;
+import com.dto.BookRequestDto;
 import com.dto.ReviewRequestDto;
 import com.dto.ReviewResponseDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -13,10 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 @RequiredArgsConstructor
 @Service
 public class ReviewService {
@@ -25,25 +21,23 @@ public class ReviewService {
 
     private final ReviewRepository reviewRepository;
     private final RestTemplate restTemplate;
+    private final JwtConfig jwtConfig;
 
     @Transactional
-    public ReviewResponseDto addReview(Long bookId, ReviewRequestDto.Post reviewRequestDto, String identifier) throws JsonProcessingException {
+    public ReviewResponseDto addReview(Long bookId, ReviewRequestDto.Post reviewRequestDto, String jwt) throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_JSON));
+        headers.set(jwtConfig.getHeader(), jwtConfig.getPrefix() + " " + jwt);
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("rating", reviewRequestDto.getRating());
-
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(map, headers);
+        HttpEntity<BookRequestDto> entity = new HttpEntity<>(BookRequestDto.builder().rating(reviewRequestDto.getRating()).build(), headers);
 
         ResponseEntity<String> response
                 = restTemplate.exchange(ADD_REVIEW_IN_BOOK_URL + bookId + "/reviews", HttpMethod.PUT, entity, String.class);
 
-        Review review = reviewRepository.save(reviewRequestDto.toEntity(bookId, identifier));
+        ReviewResponseDto reviewResponseDto = new ObjectMapper().readValue(response.getBody(), ReviewResponseDto.class);
 
-        BookResponseDto bookResponseDto = new ObjectMapper().readValue(response.getBody(), BookResponseDto.class);
+        reviewRepository.save(reviewRequestDto.toEntity(bookId, reviewResponseDto.getIdentifier()));
 
-        return bookResponseDto.toReviewResponseDto(review.getIdentifier());
+        return reviewResponseDto;
     }
 }

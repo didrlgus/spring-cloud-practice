@@ -8,7 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 public class ReviewRequestDto {
 
-    Integer rating;
+    private Integer rating;
 
     @Builder
     public ReviewRequestDto(Integer rating) {

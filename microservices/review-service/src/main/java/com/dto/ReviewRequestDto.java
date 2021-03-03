@@ -41,6 +41,7 @@ public class ReviewRequestDto {
                     .identifier(identifier)
                     .rating(this.rating)
                     .content(this.content)
+                    .isDeleted(false)
                     .build();
         }
     }

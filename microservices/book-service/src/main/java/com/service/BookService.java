@@ -2,10 +2,7 @@ package com.service;
 
 import com.domain.Book;
 import com.domain.BookRepository;
-import com.dto.BookPagingResponseDto;
-import com.dto.BookRequestDto;
-import com.dto.BookResponseDto;
-import com.dto.ReviewRequestDto;
+import com.dto.*;
 import com.exception.*;
 import com.utils.page.PageUtils;
 import lombok.RequiredArgsConstructor;
@@ -142,14 +139,11 @@ public class BookService {
     }
 
     @Transactional
-    public BookResponseDto addReviewRating(Long bookId, ReviewRequestDto reviewRequestDto) {
+    public ReviewResponseDto addReviewRating(Long bookId, ReviewRequestDto reviewRequestDto, String reviewIdentifier) {
         Book book = bookRepository.findByIdAndIsDeleted(bookId, false).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
 
         book.addReviewRating(reviewRequestDto);
 
-        BookResponseDto bookResponseDto = modelMapper.map(book, BookResponseDto.class);
-        bookResponseDto.setAvgReviewRating((int) round((double) book.getTotalRating() / book.getReviewCount()));
-
-        return bookResponseDto;
+        return book.toReviewResponseDto(reviewIdentifier);
     }
 }
