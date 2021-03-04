@@ -33,6 +33,8 @@ public class BookService {
 
     private static final int BOOK_PAGE_SIZE = 10;
     private static final int BOOK_SCALE_SIZE = 10;
+    private static final int RENT_PAGE_SIZE = 10;
+    private static final int RENT_SCALE_SIZE = 10;
 
     @Transactional
     public BookResponseDto addBook(BookRequestDto.Post bookRequestDto) {
@@ -83,40 +85,41 @@ public class BookService {
             throw new AlreadyRentException(ALREADY_RENT);
         }
 
-        book.rent(identifier);
+        Rent rent = rentRepository.save(book.toRent(identifier));
 
-        Rent rent = rentRepository.save(Rent.builder()
-                .bookId(book.getId())
-                .identifier(identifier)
-                .rentExpiredDate(book.getRentExpiredDate())
-                .rentStatus(RentStatus.RENT)
-                .build());
+        book.rent(identifier, rent.getId());
 
-        BookResponseDto ret = BookMapper.INSTANCE.bookToBookAndRentResponseDto(book, rent);
-
-        return modelMapper.map(book, BookResponseDto.class);
+        return BookMapper.INSTANCE.bookToBookAndRentResponseDto(book, rent);
     }
 
     @Transactional
-    public BookResponseDto extendRent(Long id, String identifier) {
-        Book book = bookRepository.findByIdAndIsDeleted(id, false).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
+    public BookResponseDto extendRent(Long bookId, Long rentId, String identifier) {
+        Book book = bookRepository.findByIdAndIsDeleted(bookId, false).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
 
         if (isInValidIdentifier(book.getIdentifier(), identifier)) {
             throw new InvalidIdentifierException(INVALID_IDENTIFIER_VALUE);
         }
 
-        if(book.getExtensionCount() >= 3) {
+        if (book.getExtensionCount() >= 3) {
             throw new ExtensionCountException(INVALID_EXTENSION_COUNT_VALUE);
         }
 
         book.extendRent();
 
-        return modelMapper.map(book, BookResponseDto.class);
+        Rent rent = rentRepository.findById(rentId).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
+
+        if (rent.isInvalidStatus()) {
+            throw new InvalidRentStatusException(INVALID_RENT_STATUS_EXCEPTION);
+        }
+
+        rent.extendRent(book);
+
+        return BookMapper.INSTANCE.bookToBookAndRentResponseDto(book, rent);
     }
 
     @Transactional
-    public BookResponseDto returnBook(Long id, String identifier) {
-        Book book = bookRepository.findByIdAndIsDeleted(id, false).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
+    public BookResponseDto returnBook(Long bookId, Long rentId, String identifier) {
+        Book book = bookRepository.findByIdAndIsDeleted(bookId, false).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
 
         if (isInValidIdentifier(book.getIdentifier(), identifier)) {
             throw new InvalidIdentifierException(INVALID_IDENTIFIER_VALUE);
@@ -124,7 +127,20 @@ public class BookService {
 
         book.returnBook();
 
-        return modelMapper.map(book, BookResponseDto.class);
+        Rent rent = rentRepository.findById(rentId).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
+
+        rent.returnBook();
+
+        return BookMapper.INSTANCE.bookToBookAndRentResponseDto(book, rent);
+    }
+
+    @Transactional
+    public ReviewResponseDto addReviewRating(Long bookId, ReviewRequestDto reviewRequestDto, String reviewIdentifier) {
+        Book book = bookRepository.findByIdAndIsDeleted(bookId, false).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
+
+        book.addReviewRating(reviewRequestDto);
+
+        return book.toReviewResponseDto(reviewIdentifier);
     }
 
     private List<BookResponseDto> getBookResponseDtoList(Page<Book> bookPage) {
@@ -148,14 +164,5 @@ public class BookService {
         return Optional.ofNullable(identifierFromEntity)
                 .map(val -> !val.equals(identifier))
                 .orElse(true);
-    }
-
-    @Transactional
-    public ReviewResponseDto addReviewRating(Long bookId, ReviewRequestDto reviewRequestDto, String reviewIdentifier) {
-        Book book = bookRepository.findByIdAndIsDeleted(bookId, false).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
-
-        book.addReviewRating(reviewRequestDto);
-
-        return book.toReviewResponseDto(reviewIdentifier);
     }
 }

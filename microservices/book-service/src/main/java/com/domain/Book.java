@@ -26,8 +26,11 @@ import static java.lang.Math.round;
 public class Book {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column
+    private Long rentId;
 
     @Column
     private String identifier;      // 유저 아이디
@@ -108,8 +111,9 @@ public class Book {
         this.isDeleted = true;
     }
 
-    public void rent(String identifier) {
+    public void rent(String identifier, Long rentId) {
         this.identifier = identifier;
+        this.rentId = rentId;
         this.isRent = true;
         this.rentExpiredDate = LocalDate.now().plusMonths(1);
     }
@@ -121,6 +125,7 @@ public class Book {
 
     public void returnBook() {
         this.identifier = null;
+        this.rentId = null;
         this.isRent = false;
         this.extensionCount = 0;
         this.rentExpiredDate = null;
@@ -141,5 +146,16 @@ public class Book {
 
     public int calcAvgReviewRating() {
         return (int) round((double) this.getTotalRating() / this.getReviewCount());
+    }
+
+    public Rent toRent(String identifier) {
+        return Rent.builder()
+                .bookId(this.getId())
+                .bookTitle(this.getTitle())
+                .bookAuthor(this.getAuthor())
+                .identifier(identifier)
+                .rentExpiredDate(this.getRentExpiredDate())
+                .rentStatus(RentStatus.RENT)
+                .build();
     }
 }

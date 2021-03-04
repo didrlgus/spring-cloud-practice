@@ -19,11 +19,17 @@ import java.time.LocalDateTime;
 public class Rent {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
     private Long bookId;
+
+    @Column(nullable = false)
+    private String bookTitle;
+
+    @Column(nullable = false)
+    private String bookAuthor;
 
     @Column(nullable = false)
     private String identifier;      // 유저 아이디
@@ -40,4 +46,15 @@ public class Rent {
     @LastModifiedDate
     private LocalDateTime modifiedDate;
 
+    public void extendRent(Book book) {
+        this.rentExpiredDate = book.getRentExpiredDate();
+    }
+
+    public void returnBook() {
+        this.rentStatus = RentStatus.RETURN;
+    }
+
+    public boolean isInvalidStatus() {
+        return this.getRentStatus() == RentStatus.OVERDUE || this.getRentStatus() == RentStatus.RETURN;
+    }
 }

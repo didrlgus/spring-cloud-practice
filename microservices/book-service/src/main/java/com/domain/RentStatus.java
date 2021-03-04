@@ -3,7 +3,7 @@ package com.domain;
 public enum RentStatus {
 
     RENT("대여중"),
-    RETURN("반납완료"),
+    RETURN("대여가능"),
     OVERDUE("연체중");
 
     RentStatus(String value) {

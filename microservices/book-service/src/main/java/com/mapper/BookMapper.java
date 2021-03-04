@@ -43,6 +43,7 @@ public interface BookMapper {
     @Mapping(source = "book.referenceUrl", target = "referenceUrl")
     @Mapping(source = "book.location", target = "location")
     @Mapping(source = "book.thumbnail", target = "thumbnail")
+    @Mapping(source = "book.rent", target = "isRent")
     @Mapping(source = "book.etc", target = "etc")
     @Mapping(source = "book.extensionCount", target = "extensionCount")
     @Mapping(source = "book.reviewCount", target = "reviewCount")

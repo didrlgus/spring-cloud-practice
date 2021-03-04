@@ -56,22 +56,23 @@ public class BookController {
         return ResponseEntity.ok(bookService.rentBook(id, jwtUtils.getIdentifierFromJwt(jwt)));
     }
 
-    @PutMapping("/books/{id}/extension")
-    public ResponseEntity<BookResponseDto> extendRent(@PathVariable("id") Long id, HttpServletRequest request) throws AccessDeniedException {
+    @PutMapping("/books/{bookId}/rent/{rentId}/extension")
+    public ResponseEntity<BookResponseDto> extendRent(@PathVariable("bookId") Long bookId, @PathVariable("rentId") Long rentId, HttpServletRequest request) throws AccessDeniedException {
         String jwt = jwtUtils.getJwtFromRequest(request);
 
-        return ResponseEntity.ok(bookService.extendRent(id, jwtUtils.getIdentifierFromJwt(jwt)));
+        return ResponseEntity.ok(bookService.extendRent(bookId, rentId, jwtUtils.getIdentifierFromJwt(jwt)));
     }
 
-    @PutMapping("/books/{id}/return")
-    public ResponseEntity<BookResponseDto> returnBook(@PathVariable("id") Long id, HttpServletRequest request) throws AccessDeniedException {
+    @PutMapping("/books/{bookId}/rent/{rentId}/return")
+    public ResponseEntity<BookResponseDto> returnBook(@PathVariable("bookId") Long bookId, @PathVariable("rentId") Long rentId, HttpServletRequest request) throws AccessDeniedException {
         String jwt = jwtUtils.getJwtFromRequest(request);
 
-        return ResponseEntity.ok(bookService.returnBook(id, jwtUtils.getIdentifierFromJwt(jwt)));
+        return ResponseEntity.ok(bookService.returnBook(bookId, rentId, jwtUtils.getIdentifierFromJwt(jwt)));
     }
 
     @GetMapping("/books/rent")
-    public ResponseEntity<?> getRentListOfUser() {
+    public ResponseEntity<?> getRentListOfUser(HttpServletRequest request) throws AccessDeniedException {
+        String jwt = jwtUtils.getJwtFromRequest(request);
 
         return null;
     }
