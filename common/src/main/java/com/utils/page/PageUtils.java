@@ -11,6 +11,8 @@ import static java.util.Objects.isNull;
 @Component
 public class PageUtils {
 
+    private static final int MIN_PAGE_VAL = 1;
+
     public int getRealPage(Integer page) {
         return isNull(page) ? 0 : page - 1;
     }
@@ -25,6 +27,10 @@ public class PageUtils {
         pageResponseData.setPagingInfo(pageList.getNumber(), pageList.getTotalPages(), scaleSize);
 
         return pageResponseData;
+    }
+
+    public boolean isInvalidPageValue(Integer page) {
+        return !isNull(page) && page < MIN_PAGE_VAL;
     }
 
 }

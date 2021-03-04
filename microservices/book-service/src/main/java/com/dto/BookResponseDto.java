@@ -1,19 +1,20 @@
 package com.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Setter
 @Getter
+@Builder
+@AllArgsConstructor
 @NoArgsConstructor
 public class BookResponseDto {
 
     private Long id;
+    private Long rentId;
     private String identifier;
     private String title;
     private String author;

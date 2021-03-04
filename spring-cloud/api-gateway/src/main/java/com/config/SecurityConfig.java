@@ -36,6 +36,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.POST, "/auth-service/auth")
                 .antMatchers(HttpMethod.POST, "/user-service/users")
                 .antMatchers(HttpMethod.GET, "/book-service/books/**")
+                .antMatchers(HttpMethod.GET, "/review-service/books/reviews/**")
+                .antMatchers(HttpMethod.GET, "/review-service/books/**/reviews")
                 .antMatchers(AUTH_WHITELIST);
     }
 

@@ -24,3 +24,10 @@ dependencyManagement {
         mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
 }
+
+compileJava {
+    options.compilerArgs = [
+            '-Amapstruct.suppressGeneratorTimestamp=true', '-Amapstruct.suppressGeneratorVersionInfoComment=true'
+    ]
+}
+

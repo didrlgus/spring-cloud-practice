@@ -9,12 +9,15 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import javax.security.sasl.AuthenticationException;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.stream.Collectors;
+
+import static com.exception.message.CommonExceptionMessage.HANDLE_ACCESS_DENIED;
 
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
@@ -29,11 +32,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String header = request.getHeader(jwtConfig.getHeader());
 
         if (jwtUtils.isUnValidHeader(header)) {
-            filterChain.doFilter(request, response);                                        // go to the next filter in filter chain
-            return;
+            throw new AuthenticationException(HANDLE_ACCESS_DENIED);
         }
 
-        String jwt = jwtUtils.getPureJwtInHeader(header);                                 // remove Bearer and get pure jwt
+        String jwt = jwtUtils.getPureJwtInHeader(header);                                   // remove Bearer and get pure jwt
 
         try {
             authenticationWithJwt(jwt);

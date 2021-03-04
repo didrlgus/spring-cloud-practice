@@ -1,9 +1,9 @@
 package com.service;
 
-import com.domain.Book;
-import com.domain.BookRepository;
+import com.domain.*;
 import com.dto.*;
 import com.exception.*;
+import com.mapper.BookMapper;
 import com.utils.page.PageUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +20,6 @@ import java.util.stream.Collectors;
 import static com.exception.message.BookExceptionMessage.*;
 import static com.exception.message.CommonExceptionMessage.ENTITY_NOT_FOUND;
 import static com.exception.message.CommonExceptionMessage.INVALID_PAGE_VALUE;
-import static java.lang.Math.round;
-import static java.util.Objects.isNull;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -29,10 +27,10 @@ import static java.util.Objects.isNull;
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final RentRepository rentRepository;
     private final ModelMapper modelMapper;
     private final PageUtils pageUtils;
 
-    private static final int MIN_PAGE_VAL = 1;
     private static final int BOOK_PAGE_SIZE = 10;
     private static final int BOOK_SCALE_SIZE = 10;
 
@@ -43,7 +41,7 @@ public class BookService {
     }
 
     public BookPagingResponseDto getBooks(Integer page) {
-        if (!isNull(page) && page < MIN_PAGE_VAL) {
+        if (pageUtils.isInvalidPageValue(page)) {
             throw new InvalidPageValueException(INVALID_PAGE_VALUE);
         }
 
@@ -87,6 +85,15 @@ public class BookService {
 
         book.rent(identifier);
 
+        Rent rent = rentRepository.save(Rent.builder()
+                .bookId(book.getId())
+                .identifier(identifier)
+                .rentExpiredDate(book.getRentExpiredDate())
+                .rentStatus(RentStatus.RENT)
+                .build());
+
+        BookResponseDto ret = BookMapper.INSTANCE.bookToBookAndRentResponseDto(book, rent);
+
         return modelMapper.map(book, BookResponseDto.class);
     }
 
@@ -121,7 +128,12 @@ public class BookService {
     }
 
     private List<BookResponseDto> getBookResponseDtoList(Page<Book> bookPage) {
-        return bookPage.stream().map(Book -> modelMapper.map(Book, BookResponseDto.class)).collect(Collectors.toList());
+        return bookPage.stream().map(book -> {
+            BookResponseDto bookResponseDto = BookMapper.INSTANCE.bookToBookResponseDto(book);
+            bookResponseDto.setAvgReviewRating(book.calcAvgReviewRating());
+
+            return bookResponseDto;
+        }).collect(Collectors.toList());
     }
 
     private BookPagingResponseDto getBookPagingResponseDto(Page<Book> bookPage, List<BookResponseDto> bookResponseDtoList) {

@@ -1,8 +1,10 @@
 package com.domain;
 
 import com.dto.BookRequestDto;
+import com.dto.BookResponseDto;
 import com.dto.ReviewRequestDto;
 import com.dto.ReviewResponseDto;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -132,8 +134,12 @@ public class Book {
     public ReviewResponseDto toReviewResponseDto(String reviewIdentifier) {
         return ReviewResponseDto.builder()
                 .identifier(reviewIdentifier)
-                .avgReviewRating((int) round((double) this.getTotalRating() / this.getReviewCount()))
+                .avgReviewRating(calcAvgReviewRating())
                 .reviewCount(reviewCount)
                 .build();
+    }
+
+    public int calcAvgReviewRating() {
+        return (int) round((double) this.getTotalRating() / this.getReviewCount());
     }
 }

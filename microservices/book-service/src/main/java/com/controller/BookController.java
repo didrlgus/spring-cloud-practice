@@ -70,6 +70,12 @@ public class BookController {
         return ResponseEntity.ok(bookService.returnBook(id, jwtUtils.getIdentifierFromJwt(jwt)));
     }
 
+    @GetMapping("/books/rent")
+    public ResponseEntity<?> getRentListOfUser() {
+
+        return null;
+    }
+
     @PutMapping("/books/{id}/reviews")
     public ResponseEntity<ReviewResponseDto> addReviewRating(@PathVariable("id") Long bookId, @RequestBody ReviewRequestDto reviewRequestDto,
                                                              HttpServletRequest request) throws AccessDeniedException {
