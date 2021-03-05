@@ -4,6 +4,8 @@ import com.config.JwtConfig;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -62,6 +64,14 @@ public class JwtUtils {
 
     public String getIdentifierFromJwt(String jwt) {
         return getSubjectFromJwt(jwt);
+    }
+
+    public HttpHeaders getHttpHeadersIncludedJwt(String jwt) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set(jwtConfig.getHeader(), jwtConfig.getPrefix() + " " + jwt);
+
+        return headers;
     }
 
 }

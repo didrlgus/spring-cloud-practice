@@ -171,10 +171,10 @@ public class BookApiTest {
         String testJwt = makeTestJwt();
 
         // 책 대여 API 호출
-        rentBookAPI(bookResponseDto.getId(), testJwt, status().is2xxSuccessful());
+        BookResponseDto rentBookResponseDto = objectMapper.readValue(rentBookAPI(bookResponseDto.getId(), testJwt, status().is2xxSuccessful()).getContentAsString(), BookResponseDto.class);
 
         // 책 대여연장 API 호출
-        MockHttpServletResponse extensionResponse = extensionBookAPI(bookResponseDto.getId(), testJwt, status().is2xxSuccessful());
+        MockHttpServletResponse extensionResponse = extensionBookAPI(rentBookResponseDto.getId(), rentBookResponseDto.getRentId(), testJwt, status().is2xxSuccessful());
 
         BookResponseDto bookExtensionResponseDto = objectMapper.readValue(extensionResponse.getContentAsString(), BookResponseDto.class);
 
@@ -192,12 +192,12 @@ public class BookApiTest {
         String validJwt = makeTestJwt();
 
         // 책 대여 API 호출
-        rentBookAPI(bookResponseDto.getId(), validJwt, status().is2xxSuccessful());
+        BookResponseDto rentBookResponseDto = objectMapper.readValue(rentBookAPI(bookResponseDto.getId(), validJwt, status().is2xxSuccessful()).getContentAsString(), BookResponseDto.class);
 
         String unValidJwt = makeUnValidTestJwt();
 
         // 책 대여연장 API 호출
-        MockHttpServletResponse extensionResponse = extensionBookAPI(bookResponseDto.getId(), unValidJwt, status().is4xxClientError());
+        MockHttpServletResponse extensionResponse = extensionBookAPI(bookResponseDto.getId(), rentBookResponseDto.getRentId(), unValidJwt, status().is4xxClientError());
 
         ErrorResponse errorResponse = objectMapper.readValue(extensionResponse.getContentAsString(), ErrorResponse.class);
 
@@ -214,15 +214,15 @@ public class BookApiTest {
         String testJwt = makeTestJwt();
 
         // 책 대여 API 호출
-        rentBookAPI(bookResponseDto.getId(), testJwt, status().is2xxSuccessful());
+        BookResponseDto rentBookResponseDto = objectMapper.readValue(rentBookAPI(bookResponseDto.getId(), testJwt, status().is2xxSuccessful()).getContentAsString(), BookResponseDto.class);
 
         // 책 대여연장 API 3회 호출
         for(int i = 0; i < 3; i++) {
-            extensionBookAPI(bookResponseDto.getId(), testJwt, status().is2xxSuccessful());
+            extensionBookAPI(bookResponseDto.getId(), rentBookResponseDto.getRentId(), testJwt, status().is2xxSuccessful());
         }
 
         // 책 대여연장 API 호출
-        MockHttpServletResponse extensionResponse = extensionBookAPI(bookResponseDto.getId(), testJwt, status().is4xxClientError());
+        MockHttpServletResponse extensionResponse = extensionBookAPI(bookResponseDto.getId(), rentBookResponseDto.getRentId(), testJwt, status().is4xxClientError());
 
         ErrorResponse errorResponse = objectMapper.readValue(extensionResponse.getContentAsString(), ErrorResponse.class);
 
@@ -239,10 +239,10 @@ public class BookApiTest {
         String testJwt = makeTestJwt();
 
         // 책 대여 API 호출
-        rentBookAPI(bookResponseDto.getId(), testJwt, status().is2xxSuccessful());
+        BookResponseDto rentBookResponseDto = objectMapper.readValue(rentBookAPI(bookResponseDto.getId(), testJwt, status().is2xxSuccessful()).getContentAsString(), BookResponseDto.class);
 
         // 책 반환 API 호출
-        MockHttpServletResponse returnResponse = returnBookAPI(bookResponseDto.getId(), testJwt, status().is2xxSuccessful());
+        MockHttpServletResponse returnResponse = returnBookAPI(bookResponseDto.getId(), rentBookResponseDto.getRentId(), testJwt, status().is2xxSuccessful());
 
         BookResponseDto returnBookResponseDto = objectMapper.readValue(returnResponse.getContentAsString(), BookResponseDto.class);
 
@@ -313,16 +313,16 @@ public class BookApiTest {
                 .andReturn().getResponse();
     }
 
-    private MockHttpServletResponse extensionBookAPI(Long id, String jwt, ResultMatcher status) throws Exception {
-        return mockMvc.perform(put("/books/" + id + "/extension")
+    private MockHttpServletResponse extensionBookAPI(Long bookId, Long rentId, String jwt, ResultMatcher status) throws Exception {
+        return mockMvc.perform(put("/books/" + bookId + "/rent/" + rentId +  "/extension")
                 .header(jwtConfig.getHeader(), jwtConfig.getPrefix() + " " + jwt)
                 .contentType(APPLICATION_JSON))
                 .andExpect(status)
                 .andReturn().getResponse();
     }
 
-    private MockHttpServletResponse returnBookAPI(Long id, String jwt, ResultMatcher status) throws Exception {
-        return mockMvc.perform(put("/books/" + id + "/return")
+    private MockHttpServletResponse returnBookAPI(Long bookId, Long rentId, String jwt, ResultMatcher status) throws Exception {
+        return mockMvc.perform(put("/books/" + bookId + "/rent/" + rentId + "/return")
                 .header(jwtConfig.getHeader(), jwtConfig.getPrefix() + " " + jwt)
                 .contentType(APPLICATION_JSON))
                 .andExpect(status)

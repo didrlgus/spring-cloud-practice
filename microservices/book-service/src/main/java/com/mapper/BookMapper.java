@@ -2,6 +2,7 @@ package com.mapper;
 
 import com.domain.Book;
 import com.domain.Rent;
+import com.dto.BookRequestDto;
 import com.dto.BookResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,6 +14,7 @@ public interface BookMapper {
     BookMapper INSTANCE = Mappers.getMapper(BookMapper.class);
 
     @Mapping(source = "id", target = "id")
+    @Mapping(source = "rentId", target = "rentId")
     @Mapping(source = "identifier", target = "identifier")
     @Mapping(source = "title", target = "title")
     @Mapping(source = "author", target = "author")
@@ -24,6 +26,7 @@ public interface BookMapper {
     @Mapping(source = "referenceUrl", target = "referenceUrl")
     @Mapping(source = "location", target = "location")
     @Mapping(source = "thumbnail", target = "thumbnail")
+    @Mapping(source = "rent", target = "isRent")
     @Mapping(source = "etc", target = "etc")
     @Mapping(source = "extensionCount", target = "extensionCount")
     @Mapping(source = "reviewCount", target = "reviewCount")

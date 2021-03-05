@@ -4,15 +4,17 @@ import com.config.JwtConfig;
 import com.domain.Review;
 import com.domain.ReviewRepository;
 import com.dto.BookRequestDto;
-import com.dto.ReviewPagingResponseDto;
 import com.dto.ReviewRequestDto;
 import com.dto.ReviewResponseDto;
 import com.exception.EntityNotFoundException;
 import com.exception.InvalidPageValueException;
+import com.exception.InvalidReviewIdentifierException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mapper.ReviewMapper;
+import com.utils.jwt.JwtUtils;
 import com.utils.page.PageUtils;
+import com.utils.page.PagingResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
@@ -26,16 +28,17 @@ import java.util.stream.Collectors;
 
 import static com.exception.message.CommonExceptionMessage.ENTITY_NOT_FOUND;
 import static com.exception.message.CommonExceptionMessage.INVALID_PAGE_VALUE;
+import static com.exception.message.ReviewExceptionMessage.INVALID_REVIEW_IDENTIFIER;
 
 @RequiredArgsConstructor
 @Service
 public class ReviewService {
 
-    private final static String ADD_REVIEW_IN_BOOK_URL = "http://book-service/books/";
+    private final static String REVIEW_IN_BOOK_URL = "http://book-service/books/";
 
     private final ReviewRepository reviewRepository;
     private final RestTemplate restTemplate;
-    private final JwtConfig jwtConfig;
+    private final JwtUtils jwtUtils;
     private final PageUtils pageUtils;
 
     private static final int REVIEWS_OF_USER_PAGE = 10;
@@ -45,14 +48,11 @@ public class ReviewService {
 
     @Transactional
     public ReviewResponseDto.Add addReview(Long bookId, ReviewRequestDto.Post reviewRequestDto, String jwt) throws JsonProcessingException {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set(jwtConfig.getHeader(), jwtConfig.getPrefix() + " " + jwt);
-
-        HttpEntity<BookRequestDto> entity = new HttpEntity<>(BookRequestDto.builder().rating(reviewRequestDto.getRating()).build(), headers);
+        HttpEntity<BookRequestDto> entity = new HttpEntity<>(BookRequestDto.builder().rating(reviewRequestDto.getRating()).build(),
+                jwtUtils.getHttpHeadersIncludedJwt(jwt));
 
         ResponseEntity<String> response
-                = restTemplate.exchange(ADD_REVIEW_IN_BOOK_URL + bookId + "/reviews", HttpMethod.PUT, entity, String.class);
+                = restTemplate.exchange(REVIEW_IN_BOOK_URL + bookId + "/reviews", HttpMethod.POST, entity, String.class);
 
         ReviewResponseDto.Add reviewResponseDto = new ObjectMapper().readValue(response.getBody(), ReviewResponseDto.Add.class);
 
@@ -61,7 +61,7 @@ public class ReviewService {
         return reviewResponseDto;
     }
 
-    public ReviewPagingResponseDto getReviewsOfUser(String identifier, Integer page) {
+    public PagingResponseDto getReviewsOfUser(String identifier, Integer page) {
         if (pageUtils.isInvalidPageValue(page)) {
             throw new InvalidPageValueException(INVALID_PAGE_VALUE);
         }
@@ -69,8 +69,7 @@ public class ReviewService {
         Page<Review> reviewPage = reviewRepository.findAllByIsDeletedAndIdentifier(false, identifier,
                 pageUtils.getPageable(page, REVIEWS_OF_USER_PAGE, Sort.Direction.DESC, "createdDate"));
 
-
-        return getReviewPagingResponseDto(reviewPage, getReviewResponseDtoList(reviewPage), REVIEW_OF_USER_SCALE_SIZE);
+        return pageUtils.getCommonPagingResponseDto(reviewPage, getReviewResponseDtoList(reviewPage), REVIEW_OF_USER_SCALE_SIZE);
     }
 
     public ReviewResponseDto.Details getReviewDetails(Long id) {
@@ -79,7 +78,7 @@ public class ReviewService {
                 -> new EntityNotFoundException(ENTITY_NOT_FOUND)));
     }
 
-    public ReviewPagingResponseDto getReviewsOfBook(Long bookId, Integer page) {
+    public PagingResponseDto getReviewsOfBook(Long bookId, Integer page) {
         if (pageUtils.isInvalidPageValue(page)) {
             throw new InvalidPageValueException(INVALID_PAGE_VALUE);
         }
@@ -87,7 +86,43 @@ public class ReviewService {
         Page<Review> reviewPage = reviewRepository.findAllByIsDeletedAndBookId(false, bookId,
                 pageUtils.getPageable(page, REVIEWS_OF_BOOK_PAGE, Sort.Direction.DESC, "createdDate"));
 
-        return getReviewPagingResponseDto(reviewPage, getReviewResponseDtoList(reviewPage), REVIEW_OF_BOOK_SCALE_SIZE);
+        return pageUtils.getCommonPagingResponseDto(reviewPage, getReviewResponseDtoList(reviewPage), REVIEW_OF_BOOK_SCALE_SIZE);
+    }
+
+    @Transactional
+    public ReviewResponseDto.List updateReview(Long id, ReviewRequestDto.Put reviewRequestDto, String jwt) {
+        Review review = reviewRepository.findByIdAndIsDeleted(id, false).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
+
+        String identifier = jwtUtils.getIdentifierFromJwt(jwt);
+
+        if(!review.getIdentifier().equals(identifier)) {
+            throw new InvalidReviewIdentifierException(INVALID_REVIEW_IDENTIFIER);
+        }
+
+        review.update(reviewRequestDto);
+
+        return ReviewMapper.INSTANCE.reviewToReviewResponseDto(review);
+    }
+
+    @Transactional
+    public ReviewResponseDto.Update deleteReview(Long bookId, Long reviewId, String jwt) throws JsonProcessingException {
+        Review review = reviewRepository.findByIdAndIsDeleted(reviewId, false).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
+
+        String identifier = jwtUtils.getIdentifierFromJwt(jwt);
+
+        if(!review.getIdentifier().equals(identifier)) {
+            throw new InvalidReviewIdentifierException(INVALID_REVIEW_IDENTIFIER);
+        }
+
+        review.delete();
+
+        ResponseEntity<String> response
+                = restTemplate.exchange(REVIEW_IN_BOOK_URL + bookId + "/reviews",
+                HttpMethod.PUT,
+                new HttpEntity<>(BookRequestDto.builder().rating(review.getRating()).build(),
+                jwtUtils.getHttpHeadersIncludedJwt(jwt)), String.class);
+
+        return new ObjectMapper().readValue(response.getBody(), ReviewResponseDto.Update.class);
     }
 
     private List<ReviewResponseDto.List> getReviewResponseDtoList(Page<Review> reviewPage) {
@@ -95,10 +130,4 @@ public class ReviewService {
         return reviewPage.stream().map(ReviewMapper.INSTANCE::reviewToReviewResponseDto).collect(Collectors.toList());
     }
 
-    private ReviewPagingResponseDto getReviewPagingResponseDto(Page<Review> reviewPage, List<ReviewResponseDto.List> reviewResponseDtoList, int scaleSeize) {
-        return ReviewPagingResponseDto.builder()
-                .reviewResponseDtoLIst(reviewResponseDtoList)
-                .pageResponseData(pageUtils.getPageResponseData(reviewPage, scaleSeize))
-                .build();
-    }
 }

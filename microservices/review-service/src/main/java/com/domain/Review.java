@@ -1,5 +1,6 @@
 package com.domain;
 
+import com.dto.ReviewRequestDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -54,5 +55,14 @@ public class Review {
         this.rating = rating;
         this.content = content;
         this.isDeleted = isDeleted;
+    }
+
+    public void update(ReviewRequestDto.Put reviewRequestDto) {
+        this.title = reviewRequestDto.getTitle();
+        this.content = reviewRequestDto.getContent();
+    }
+
+    public void delete() {
+        this.isDeleted = true;
     }
 }

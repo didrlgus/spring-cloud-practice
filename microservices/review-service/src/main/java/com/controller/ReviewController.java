@@ -1,16 +1,17 @@
 package com.controller;
 
-import com.dto.ReviewPagingResponseDto;
 import com.dto.ReviewRequestDto;
 import com.dto.ReviewResponseDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.utils.jwt.JwtUtils;
 import com.service.ReviewService;
+import com.utils.page.PagingResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.nio.file.AccessDeniedException;
 
 @RequiredArgsConstructor
@@ -21,7 +22,7 @@ public class ReviewController {
     private final ReviewService reviewService;
 
     @PostMapping("/books/{id}/reviews")
-    public ResponseEntity<ReviewResponseDto.Add> addReview(@PathVariable("id") Long bookId, @RequestBody ReviewRequestDto.Post reviewRequestDto, HttpServletRequest request)
+    public ResponseEntity<ReviewResponseDto.Add> addReview(@PathVariable("id") Long bookId, @RequestBody @Valid ReviewRequestDto.Post reviewRequestDto, HttpServletRequest request)
             throws AccessDeniedException, JsonProcessingException {
 
         String jwt = jwtUtils.getJwtFromRequest(request);
@@ -30,7 +31,7 @@ public class ReviewController {
     }
 
     @GetMapping("/books/reviews")
-    public ResponseEntity<ReviewPagingResponseDto> getReviewsOfUser(@RequestParam(value = "page", required = false) Integer page, HttpServletRequest request) throws AccessDeniedException {
+    public ResponseEntity<PagingResponseDto> getReviewsOfUser(@RequestParam(value = "page", required = false) Integer page, HttpServletRequest request) throws AccessDeniedException {
         String jwt = jwtUtils.getJwtFromRequest(request);
 
         return ResponseEntity.ok(reviewService.getReviewsOfUser(jwtUtils.getIdentifierFromJwt(jwt), page));
@@ -43,9 +44,23 @@ public class ReviewController {
     }
 
     @GetMapping("/books/{id}/reviews")
-    public ResponseEntity<ReviewPagingResponseDto> getReviewsOfBook(@PathVariable("id") Long bookId, @RequestParam(value = "page", required = false) Integer page) {
+    public ResponseEntity<PagingResponseDto> getReviewsOfBook(@PathVariable("id") Long bookId, @RequestParam(value = "page", required = false) Integer page) {
 
         return ResponseEntity.ok(reviewService.getReviewsOfBook(bookId, page));
+    }
+
+    @PutMapping("/reviews/{id}")
+    public ResponseEntity<ReviewResponseDto.List> updateReview(@PathVariable("id") Long id, @RequestBody @Valid ReviewRequestDto.Put reviewRequestDto,
+                                                               HttpServletRequest request) throws AccessDeniedException, JsonProcessingException {
+
+        return ResponseEntity.ok(reviewService.updateReview(id, reviewRequestDto, jwtUtils.getJwtFromRequest(request)));
+    }
+
+    @DeleteMapping("/books/{bookId}/reviews/{reviewId}")
+    public ResponseEntity<ReviewResponseDto.Update> deleteReview(@PathVariable("bookId") Long bookId, @PathVariable("reviewId") Long reviewId,
+                                          HttpServletRequest request) throws AccessDeniedException, JsonProcessingException {
+
+        return ResponseEntity.ok(reviewService.deleteReview(bookId, reviewId, jwtUtils.getJwtFromRequest(request)));
     }
 
 }

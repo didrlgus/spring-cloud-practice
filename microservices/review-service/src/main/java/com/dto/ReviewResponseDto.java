@@ -25,6 +25,19 @@ public class ReviewResponseDto {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
+    public static class Update {
+        private String identifier;
+
+        private Integer avgReviewRating;
+
+        private Integer reviewCount;
+    }
+
+    @Setter
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
     public static class List {
         private Long id;
 

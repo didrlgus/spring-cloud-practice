@@ -1,6 +1,7 @@
 package com.dto;
 
 import com.domain.Review;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,6 +14,8 @@ import javax.validation.constraints.Size;
 public class ReviewRequestDto {
 
     @Getter
+    @Builder
+    @AllArgsConstructor
     @NoArgsConstructor
     public static class Post {
         @Size(min = 1, max = 255)
@@ -27,13 +30,6 @@ public class ReviewRequestDto {
         @NotNull(message = "내용은 null일 수 없습니다.")
         private String content;
 
-        @Builder
-        public Post(String title, Integer rating, String content) {
-            this.title = title;
-            this.rating = rating;
-            this.content = content;
-        }
-
         public Review toEntity(Long bookId, String identifier) {
             return Review.builder()
                     .bookId(bookId)
@@ -44,6 +40,20 @@ public class ReviewRequestDto {
                     .isDeleted(false)
                     .build();
         }
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class Put {
+
+        @Size(min = 1, max = 255)
+        @NotNull(message = "제목은 null일 수 없습니다.")
+        private String title;
+
+        @NotNull(message = "내용은 null일 수 없습니다.")
+        private String content;
     }
 
 }

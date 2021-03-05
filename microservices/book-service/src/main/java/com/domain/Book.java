@@ -1,10 +1,8 @@
 package com.domain;
 
 import com.dto.BookRequestDto;
-import com.dto.BookResponseDto;
 import com.dto.ReviewRequestDto;
 import com.dto.ReviewResponseDto;
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -15,6 +13,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import static java.lang.Math.round;
+import static java.util.Objects.isNull;
 
 @ToString
 @Getter
@@ -132,6 +131,9 @@ public class Book {
     }
 
     public void addReviewRating(ReviewRequestDto reviewRequestDto) {
+        if(isNull(this.totalRating)) {
+            this.totalRating = 0;
+        }
         this.totalRating = this.totalRating + reviewRequestDto.getRating();
         this.reviewCount++;
     }
@@ -157,5 +159,10 @@ public class Book {
                 .rentExpiredDate(this.getRentExpiredDate())
                 .rentStatus(RentStatus.RENT)
                 .build();
+    }
+
+    public void deleteReview(ReviewRequestDto reviewRequestDto) {
+        this.totalRating = this.totalRating - reviewRequestDto.getRating();
+        this.reviewCount--;
     }
 }

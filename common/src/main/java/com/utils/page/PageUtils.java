@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 import static java.util.Objects.isNull;
 
 @Component
@@ -31,6 +33,15 @@ public class PageUtils {
 
     public boolean isInvalidPageValue(Integer page) {
         return !isNull(page) && page < MIN_PAGE_VAL;
+    }
+
+
+    public PagingResponseDto getCommonPagingResponseDto(Page<?> pageList, List<?> responseDtoList, int scaleSize) {
+
+        return PagingResponseDto.builder()
+                .responseDtoList(responseDtoList)
+                .pageResponseData(getPageResponseData(pageList, scaleSize))
+                .build();
     }
 
 }
