@@ -1,5 +1,7 @@
-package com.domain;
+package com.domain.book;
 
+import com.domain.rent.Rent;
+import com.domain.rent.RentStatus;
 import com.dto.BookRequestDto;
 import com.dto.ReviewRequestDto;
 import com.dto.ReviewResponseDto;

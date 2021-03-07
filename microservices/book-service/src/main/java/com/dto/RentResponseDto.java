@@ -1,6 +1,6 @@
 package com.dto;
 
-import com.domain.RentStatus;
+import com.domain.rent.RentStatus;
 import lombok.*;
 
 @Setter

@@ -25,7 +25,7 @@ public class ReviewResponseDto {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class Update {
+    public static class Delete {
         private String identifier;
 
         private Integer avgReviewRating;
@@ -38,7 +38,7 @@ public class ReviewResponseDto {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class List {
+    public static class Normal {
         private Long id;
 
         private String title;

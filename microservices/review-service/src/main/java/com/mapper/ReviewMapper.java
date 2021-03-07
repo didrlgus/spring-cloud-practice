@@ -18,7 +18,7 @@ public interface ReviewMapper {
     @Mapping(source = "rating", target = "rating")
     @Mapping(source = "createdDate", target = "createdDate")
     @Mapping(source = "modifiedDate", target = "modifiedDate")
-    ReviewResponseDto.List reviewToReviewResponseDto(Review review);
+    ReviewResponseDto.Normal reviewToReviewResponseDto(Review review);
 
     @Mapping(source = "id", target = "id")
     @Mapping(source = "bookId", target = "bookId")

@@ -1,4 +1,4 @@
-package com.domain;
+package com.domain.rent;
 
 public enum RentStatus {
 

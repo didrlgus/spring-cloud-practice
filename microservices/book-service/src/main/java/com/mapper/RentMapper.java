@@ -1,6 +1,6 @@
 package com.mapper;
 
-import com.domain.Rent;
+import com.domain.rent.Rent;
 import com.dto.RentResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

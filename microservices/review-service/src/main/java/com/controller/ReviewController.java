@@ -50,14 +50,14 @@ public class ReviewController {
     }
 
     @PutMapping("/reviews/{id}")
-    public ResponseEntity<ReviewResponseDto.List> updateReview(@PathVariable("id") Long id, @RequestBody @Valid ReviewRequestDto.Put reviewRequestDto,
+    public ResponseEntity<ReviewResponseDto.Normal> updateReview(@PathVariable("id") Long id, @RequestBody @Valid ReviewRequestDto.Put reviewRequestDto,
                                                                HttpServletRequest request) throws AccessDeniedException, JsonProcessingException {
 
         return ResponseEntity.ok(reviewService.updateReview(id, reviewRequestDto, jwtUtils.getJwtFromRequest(request)));
     }
 
     @DeleteMapping("/books/{bookId}/reviews/{reviewId}")
-    public ResponseEntity<ReviewResponseDto.Update> deleteReview(@PathVariable("bookId") Long bookId, @PathVariable("reviewId") Long reviewId,
+    public ResponseEntity<ReviewResponseDto.Delete> deleteReview(@PathVariable("bookId") Long bookId, @PathVariable("reviewId") Long reviewId,
                                           HttpServletRequest request) throws AccessDeniedException, JsonProcessingException {
 
         return ResponseEntity.ok(reviewService.deleteReview(bookId, reviewId, jwtUtils.getJwtFromRequest(request)));

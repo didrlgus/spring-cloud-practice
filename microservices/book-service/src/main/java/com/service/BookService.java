@@ -1,6 +1,7 @@
 package com.service;
 
-import com.domain.*;
+import com.domain.book.Book;
+import com.domain.book.BookRepository;
 import com.dto.*;
 import com.exception.*;
 import com.mapper.BookMapper;

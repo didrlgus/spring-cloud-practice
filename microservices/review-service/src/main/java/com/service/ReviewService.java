@@ -90,7 +90,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewResponseDto.List updateReview(Long id, ReviewRequestDto.Put reviewRequestDto, String jwt) {
+    public ReviewResponseDto.Normal updateReview(Long id, ReviewRequestDto.Put reviewRequestDto, String jwt) {
         Review review = reviewRepository.findByIdAndIsDeleted(id, false).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
 
         String identifier = jwtUtils.getIdentifierFromJwt(jwt);
@@ -105,7 +105,7 @@ public class ReviewService {
     }
 
     @Transactional
-    public ReviewResponseDto.Update deleteReview(Long bookId, Long reviewId, String jwt) throws JsonProcessingException {
+    public ReviewResponseDto.Delete deleteReview(Long bookId, Long reviewId, String jwt) throws JsonProcessingException {
         Review review = reviewRepository.findByIdAndIsDeleted(reviewId, false).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
 
         String identifier = jwtUtils.getIdentifierFromJwt(jwt);
@@ -122,10 +122,10 @@ public class ReviewService {
                 new HttpEntity<>(BookRequestDto.builder().rating(review.getRating()).build(),
                 jwtUtils.getHttpHeadersIncludedJwt(jwt)), String.class);
 
-        return new ObjectMapper().readValue(response.getBody(), ReviewResponseDto.Update.class);
+        return new ObjectMapper().readValue(response.getBody(), ReviewResponseDto.Delete.class);
     }
 
-    private List<ReviewResponseDto.List> getReviewResponseDtoList(Page<Review> reviewPage) {
+    private List<ReviewResponseDto.Normal> getReviewResponseDtoList(Page<Review> reviewPage) {
 
         return reviewPage.stream().map(ReviewMapper.INSTANCE::reviewToReviewResponseDto).collect(Collectors.toList());
     }

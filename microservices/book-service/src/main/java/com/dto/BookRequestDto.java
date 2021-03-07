@@ -1,6 +1,6 @@
 package com.dto;
 
-import com.domain.Book;
+import com.domain.book.Book;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

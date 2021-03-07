@@ -1,8 +1,8 @@
 package com.mapper;
 
-import com.domain.Book;
-import com.domain.Rent;
-import com.dto.BookRequestDto;
+import
+        com.domain.book.Book;
+import com.domain.rent.Rent;
 import com.dto.BookResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

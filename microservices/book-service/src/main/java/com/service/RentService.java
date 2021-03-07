@@ -1,9 +1,9 @@
 package com.service;
 
-import com.domain.Book;
-import com.domain.BookRepository;
-import com.domain.Rent;
-import com.domain.RentRepository;
+import com.domain.book.Book;
+import com.domain.book.BookRepository;
+import com.domain.rent.Rent;
+import com.domain.rent.RentRepository;
 import com.dto.BookResponseDto;
 import com.dto.RentResponseDto;
 import com.exception.*;

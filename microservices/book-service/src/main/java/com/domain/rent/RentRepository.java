@@ -1,4 +1,4 @@
-package com.domain;
+package com.domain.rent;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

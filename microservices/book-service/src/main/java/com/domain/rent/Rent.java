@@ -1,5 +1,6 @@
-package com.domain;
+package com.domain.rent;
 
+import com.domain.book.Book;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
