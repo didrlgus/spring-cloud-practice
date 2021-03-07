@@ -21,6 +21,39 @@ spring:
       enabled: true
       path: /console
 
+  cloud:
+    stream:
+      kafka:
+        binder:
+          brokers: 3.36.56.172
+          zkNodes: 3.36.56.172
+          defaultBrokerPort: 9092
+          autoCreateTopics: false
+      bindings:
+        book-rent-event-to-kafka:
+          destination: book-rent-topic
+          content-type: application/json
+          binder: kafka
+        book-rent-consumer:
+          destination: book-rent-topic
+          content-type: application/json
+          group: book-rent-group
+          binder: kafka
+        book-return-event-to-kafka:
+          destination: book-return-topic
+          content-type: application/json
+          binder: kafka
+        book-return-consumer:
+          destination: book-return-topic
+          content-type: application/json
+          group: book-return-group
+          binder: kafka
+        rent-return-consumer:
+          destination: book-return-topic
+          content-type: application/json
+          group: rent-return-group
+          binder: kafka
+
 logging:
   level:
     org.hibernate.type: debug

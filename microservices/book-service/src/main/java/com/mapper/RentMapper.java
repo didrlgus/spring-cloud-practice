@@ -1,5 +1,6 @@
 package com.mapper;
 
+import com.domain.book.Book;
 import com.domain.rent.Rent;
 import com.dto.RentResponseDto;
 import org.mapstruct.Mapper;
@@ -19,4 +20,8 @@ public interface RentMapper {
     @Mapping(source = "rentStatus", target = "rentStatus")
     RentResponseDto rentToRentResponseDto(Rent rent);
 
+    @Mapping(source = "id", target = "bookId")
+    @Mapping(source = "title", target = "bookTitle")
+    @Mapping(source = "author", target = "bookAuthor")
+    RentResponseDto bookToRentResponseDto(Book book);
 }

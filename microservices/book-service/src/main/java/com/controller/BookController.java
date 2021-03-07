@@ -53,7 +53,7 @@ public class BookController {
     }
 
     @PutMapping("/books/{id}/rent")
-    public ResponseEntity<BookResponseDto> rentBook(@PathVariable("id") Long id, HttpServletRequest request) throws AccessDeniedException {
+    public ResponseEntity<RentResponseDto> rentBook(@PathVariable("id") Long id, HttpServletRequest request) throws AccessDeniedException {
         String jwt = jwtUtils.getJwtFromRequest(request);
 
         return ResponseEntity.ok(rentService.rentBook(id, jwtUtils.getIdentifierFromJwt(jwt)));

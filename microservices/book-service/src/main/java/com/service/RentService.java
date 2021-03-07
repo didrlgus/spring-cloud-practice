@@ -1,18 +1,24 @@
 package com.service;
 
 import com.domain.book.Book;
+import com.domain.book.BookAlertType;
 import com.domain.book.BookRepository;
 import com.domain.rent.Rent;
 import com.domain.rent.RentRepository;
 import com.dto.BookResponseDto;
 import com.dto.RentResponseDto;
 import com.exception.*;
+import com.kafka.channel.BookRentOutputChannel;
+import com.kafka.channel.BookReturnOutputChannel;
+import com.kafka.message.BookReturnMessage;
+import com.kafka.publisher.MessagePublisher;
 import com.mapper.BookMapper;
 import com.mapper.RentMapper;
 import com.utils.page.PageUtils;
 import com.utils.page.PagingResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -25,6 +31,7 @@ import java.util.stream.Collectors;
 import static com.exception.message.BookExceptionMessage.*;
 import static com.exception.message.CommonExceptionMessage.ENTITY_NOT_FOUND;
 
+@EnableBinding({BookRentOutputChannel.class, BookReturnOutputChannel.class})
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -33,22 +40,25 @@ public class RentService {
     private final BookRepository bookRepository;
     private final RentRepository rentRepository;
     private final PageUtils pageUtils;
+    private final MessagePublisher messagePublisher;
+
     private static final int RENT_PAGE_SIZE = 10;
     private static final int RENT_SCALE_SIZE = 10;
 
     @Transactional
-    public BookResponseDto rentBook(Long id, String identifier) {
+    public RentResponseDto rentBook(Long id, String identifier) {
         Book book = bookRepository.findByIdAndIsDeleted(id, false).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
 
         if (book.isRent()) {
             throw new AlreadyRentException(ALREADY_RENT);
         }
 
-        Rent rent = rentRepository.save(book.toRent(identifier));
+        /**
+         * send event to kafka
+         */
+        messagePublisher.publishBookRentMessage(book.toBookRentMessage(identifier));
 
-        book.rent(identifier, rent.getId());
-
-        return BookMapper.INSTANCE.bookToBookAndRentResponseDto(book, rent);
+        return RentMapper.INSTANCE.bookToRentResponseDto(book);
     }
 
     @Transactional
@@ -84,11 +94,17 @@ public class RentService {
             throw new InvalidIdentifierException(INVALID_IDENTIFIER_VALUE);
         }
 
-        book.returnBook();
-
         Rent rent = rentRepository.findById(rentId).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
 
-        rent.returnBook();
+        /**
+         * send event to kafka
+         */
+        messagePublisher.publishBookReturnMessage(BookReturnMessage.builder()
+                .bookId(bookId)
+                .rentId(rentId)
+                .identifier(identifier)
+                .bookAlertType(BookAlertType.RETURN)
+                .build());
 
         return BookMapper.INSTANCE.bookToBookAndRentResponseDto(book, rent);
     }

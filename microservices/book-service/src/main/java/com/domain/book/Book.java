@@ -5,6 +5,7 @@ import com.domain.rent.RentStatus;
 import com.dto.BookRequestDto;
 import com.dto.ReviewRequestDto;
 import com.dto.ReviewResponseDto;
+import com.kafka.message.BookRentMessage;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -152,13 +153,13 @@ public class Book {
         return (int) round((double) this.getTotalRating() / this.getReviewCount());
     }
 
-    public Rent toRent(String identifier) {
+    public Rent toRent(String identifier, LocalDate rentExpiredDate) {
         return Rent.builder()
                 .bookId(this.getId())
                 .bookTitle(this.getTitle())
                 .bookAuthor(this.getAuthor())
                 .identifier(identifier)
-                .rentExpiredDate(this.getRentExpiredDate())
+                .rentExpiredDate(rentExpiredDate)
                 .rentStatus(RentStatus.RENT)
                 .build();
     }
@@ -166,5 +167,17 @@ public class Book {
     public void deleteReview(ReviewRequestDto reviewRequestDto) {
         this.totalRating = this.totalRating - reviewRequestDto.getRating();
         this.reviewCount--;
+    }
+
+    public BookRentMessage toBookRentMessage(String rentIdentifier) {
+
+        return BookRentMessage.builder()
+                .bookId(this.getId())
+                .bookTitle(this.getTitle())
+                .bookAuthor(this.getAuthor())
+                .identifier(rentIdentifier)
+                .rentExpiredDate(LocalDate.now().plusMonths(1))
+                .bookAlertType(BookAlertType.RENT)
+                .build();
     }
 }
