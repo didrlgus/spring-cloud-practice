@@ -8,6 +8,8 @@ include 'common'
 include 'microservices:auth-service'
 include 'microservices:user-service'
 include 'microservices:book-service'
+include 'microservices:alert-service'
 include 'microservices:review-service'
 include 'spring-cloud:api-gateway'
 include 'spring-cloud:discovery-service'
+

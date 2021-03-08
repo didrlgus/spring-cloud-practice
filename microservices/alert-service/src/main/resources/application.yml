@@ -1,11 +1,11 @@
 server:
-  port: 8004
+  port: 8006
 
 spring:
   application:
-    name: book-service
+    name: alert-service
   datasource:
-    url: jdbc:h2:~/book-service
+    url: jdbc:h2:~/alert-service
     username: sa
     password:
     driver-class-name: org.h2.Driver
@@ -30,30 +30,31 @@ spring:
           defaultBrokerPort: 9092
           autoCreateTopics: false
       bindings:
-        book-rent-event-to-kafka:
+        book-rent-alert-consumer:
           destination: book-rent-topic
           content-type: application/json
+          group: book-rent-alert-group
           binder: kafka
-        book-rent-consumer:
+        book-rent-mail-consumer:
           destination: book-rent-topic
           content-type: application/json
-          group: book-rent-group
+          group: book-rent-mail-group
           binder: kafka
-        book-return-event-to-kafka:
-          destination: book-return-topic
-          content-type: application/json
-          binder: kafka
-        book-return-consumer:
-          destination: book-return-topic
-          content-type: application/json
-          group: book-return-group
-          binder: kafka
-        rent-return-consumer:
-          destination: book-return-topic
-          content-type: application/json
-          group: rent-return-group
-          binder: kafka
-
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: #username
+    password: #password
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          ssl:
+            trust: smtp.gmail.com
+          starttls:
+            enable: true
 logging:
   level:
     org.hibernate.type: debug

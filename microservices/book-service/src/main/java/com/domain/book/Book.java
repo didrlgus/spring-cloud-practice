@@ -6,6 +6,7 @@ import com.dto.BookRequestDto;
 import com.dto.ReviewRequestDto;
 import com.dto.ReviewResponseDto;
 import com.kafka.message.BookRentMessage;
+import com.utils.alert.AlertType;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -169,15 +170,16 @@ public class Book {
         this.reviewCount--;
     }
 
-    public BookRentMessage toBookRentMessage(String rentIdentifier) {
+    public BookRentMessage toBookRentMessage(String rentIdentifier, String email) {
 
         return BookRentMessage.builder()
                 .bookId(this.getId())
                 .bookTitle(this.getTitle())
                 .bookAuthor(this.getAuthor())
                 .identifier(rentIdentifier)
+                .email(email)
                 .rentExpiredDate(LocalDate.now().plusMonths(1))
-                .bookAlertType(BookAlertType.RENT)
+                .alertType(AlertType.RENT)
                 .build();
     }
 }
