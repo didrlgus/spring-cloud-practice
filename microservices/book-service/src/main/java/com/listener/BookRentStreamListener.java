@@ -2,7 +2,7 @@ package com.listener;
 
 import com.kafka.channel.BookRentInputChannel;
 import com.kafka.message.BookRentMessage;
-import com.service.consumer.RentConsumerService;
+import com.kafka.consumer.BookRentConsumer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
@@ -11,14 +11,14 @@ import org.springframework.cloud.stream.annotation.StreamListener;
 @EnableBinding({BookRentInputChannel.class})
 public class BookRentStreamListener {
 
-    private final RentConsumerService rentConsumerService;
+    private final BookRentConsumer bookRentConsumer;
 
     /**
      * book rent stream listener
      */
     @StreamListener(BookRentInputChannel.BOOK_RENT_CONSUMER)
     public void bookRentListener(BookRentMessage message) {
-        rentConsumerService.addRentAndUpdateBook(message);
+        bookRentConsumer.addRentAndUpdateBook(message);
     }
 
 }

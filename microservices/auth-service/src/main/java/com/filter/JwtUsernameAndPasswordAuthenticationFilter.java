@@ -1,5 +1,6 @@
 package com.filter;
 
+import com.config.CustomUserDetails;
 import com.config.JwtConfig;
 import com.config.UserCredentials;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,8 +58,17 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
                                             FilterChain chain, Authentication authentication) throws IOException, ServletException {
 
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+
         // return jwt in response header
         response.addHeader("Token", jwtConfig.getPrefix() + " " + makeJwtWithAuthentication(authentication));
+        response.addHeader("UserId", customUserDetails.getId().toString());
+    }
+
+    @Override
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
+        System.out.println(failed);
+        super.unsuccessfulAuthentication(request, response, failed);
     }
 
     public String makeJwtWithAuthentication(Authentication authentication) {
