@@ -2,7 +2,7 @@ package com.kafka.consumer;
 
 import com.domain.Alert;
 import com.domain.AlertRepository;
-import com.kafka.message.BookRentMessage;
+import com.kafka.BookRentMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -32,7 +32,7 @@ public class BookRentConsumer {
         alertRepository.save(Alert.builder()
                 .identifier(message.getIdentifier())
                 .email(message.getEmail())
-                .title("\"" + message.getAlertType().toString() + "\" 알람 메시지 입니다.")
+                .title("gabia library ["  + message.getAlertType().value() + "] 알람 메일입니다.")
                 .message("test 알람 메시지 입니다.")
                 .alertType(message.getAlertType())
                 .build());
@@ -42,7 +42,7 @@ public class BookRentConsumer {
      * send mail about book rent event
      */
     public void sendBookRentMail(BookRentMessage message) throws Exception {
-        Context context = getPaymentSuccessMailContext(message);
+        Context context = getBookRentMailContext(message);
 
         String mailString = templateEngine.process("mail/book-rent-alert-mail", context);
 
@@ -50,19 +50,20 @@ public class BookRentConsumer {
 
         MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
         mimeMessageHelper.setTo(message.getEmail());
-        mimeMessageHelper.setSubject("\"" + message.getAlertType().toString() + "\" 알람 메시지 입니다.");
+        mimeMessageHelper.setSubject("gabia library ["  + message.getAlertType().value() + "] 알람 메일입니다.");
         mimeMessageHelper.setText(mailString, true);
+
         javaMailSender.send(mimeMessage);
 
         log.info("메일 전송에 성공했습니다.");
     }
 
-    private Context getPaymentSuccessMailContext(BookRentMessage message) {
+    private Context getBookRentMailContext(BookRentMessage message) {
         Context context = new Context();
         context.setVariable("identifier", message.getIdentifier());
         context.setVariable("bookTitle", message.getBookTitle());
         context.setVariable("bookAuthor", message.getBookAuthor());
-        context.setVariable("message", "test 알람 메시지 입니다.");
+        context.setVariable("message", "해당 도서를 대여하셨습니다.");
 
         return context;
     }

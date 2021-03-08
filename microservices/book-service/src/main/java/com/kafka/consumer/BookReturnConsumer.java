@@ -5,7 +5,7 @@ import com.domain.book.BookRepository;
 import com.domain.rent.Rent;
 import com.domain.rent.RentRepository;
 import com.exception.EntityNotFoundException;
-import com.kafka.message.BookReturnMessage;
+import com.kafka.BookReturnMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

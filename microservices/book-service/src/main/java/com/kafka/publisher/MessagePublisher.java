@@ -1,9 +1,10 @@
 package com.kafka.publisher;
 
+import com.kafka.BookRentMessage;
+import com.kafka.BookReturnMessage;
 import com.kafka.channel.BookRentOutputChannel;
 import com.kafka.channel.BookReturnOutputChannel;
-import com.kafka.message.BookRentMessage;
-import com.kafka.message.BookReturnMessage;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.integration.support.MessageBuilder;
 import org.springframework.stereotype.Component;

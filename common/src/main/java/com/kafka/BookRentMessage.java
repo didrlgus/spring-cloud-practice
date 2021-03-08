@@ -1,4 +1,4 @@
-package com.kafka.message;
+package com.kafka;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.utils.alert.AlertType;

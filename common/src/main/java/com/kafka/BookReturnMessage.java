@@ -1,4 +1,4 @@
-package com.kafka.message;
+package com.kafka;
 
 import com.utils.alert.AlertType;
 import lombok.AllArgsConstructor;

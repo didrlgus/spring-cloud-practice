@@ -5,7 +5,7 @@ import com.domain.rent.RentStatus;
 import com.dto.BookRequestDto;
 import com.dto.ReviewRequestDto;
 import com.dto.ReviewResponseDto;
-import com.kafka.message.BookRentMessage;
+import com.kafka.BookRentMessage;
 import com.utils.alert.AlertType;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;

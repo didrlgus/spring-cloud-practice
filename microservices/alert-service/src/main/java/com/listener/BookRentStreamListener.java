@@ -2,12 +2,10 @@ package com.listener;
 
 import com.kafka.channel.BookRentInputChannel;
 import com.kafka.consumer.BookRentConsumer;
-import com.kafka.message.BookRentMessage;
+import com.kafka.BookRentMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.annotation.StreamListener;
-
-import javax.mail.MessagingException;
 
 @RequiredArgsConstructor
 @EnableBinding({BookRentInputChannel.class})

@@ -1,7 +1,7 @@
 package com.listener;
 
+import com.kafka.BookReturnMessage;
 import com.kafka.channel.BookReturnInputChannel;
-import com.kafka.message.BookReturnMessage;
 import com.kafka.consumer.BookReturnConsumer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.stream.annotation.EnableBinding;
