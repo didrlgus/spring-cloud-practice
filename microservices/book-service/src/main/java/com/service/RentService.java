@@ -8,16 +8,18 @@ import com.dto.BookResponseDto;
 import com.dto.RentResponseDto;
 import com.dto.UserEmailDto;
 import com.exception.*;
-import com.kafka.channel.BookRentOutputChannel;
-import com.kafka.channel.BookReturnOutputChannel;
-import com.kafka.publisher.MessagePublisher;
+//import com.kafka.channel.BookRentOutputChannel;
+//import com.kafka.channel.BookReturnOutputChannel;
+//import com.kafka.publisher.MessagePublisher;
+import com.kafka.publisher.KafkaBookRentMessageSender;
+import com.kafka.publisher.KafkaBookReturnMessageSender;
 import com.mapper.BookMapper;
 import com.mapper.RentMapper;
 import com.utils.page.PageUtils;
 import com.utils.page.PagingResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cloud.stream.annotation.EnableBinding;
+//import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
@@ -33,7 +35,7 @@ import static com.exception.message.BookExceptionMessage.*;
 import static com.exception.message.CommonExceptionMessage.ENTITY_NOT_FOUND;
 import static java.util.Objects.isNull;
 
-@EnableBinding({BookRentOutputChannel.class, BookReturnOutputChannel.class})
+//@EnableBinding({BookRentOutputChannel.class, BookReturnOutputChannel.class})
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -42,8 +44,10 @@ public class RentService {
     private final BookRepository bookRepository;
     private final RentRepository rentRepository;
     private final PageUtils pageUtils;
-    private final MessagePublisher messagePublisher;
+    //private final MessagePublisher messagePublisher;
     private final RestTemplate restTemplate;
+    private final KafkaBookRentMessageSender kafkaBookRentMessageSender;
+    private final KafkaBookReturnMessageSender kafkaBookReturnMessageSender;
 
     private static final int RENT_PAGE_SIZE = 10;
     private static final int RENT_SCALE_SIZE = 10;
@@ -66,7 +70,8 @@ public class RentService {
         /**
          * send rent book event to kafka
          */
-        messagePublisher.publishBookRentMessage(book.toBookRentMessage(identifier, userEmailDto.getEmail()));
+        //messagePublisher.publishBookRentMessage(book.toBookRentMessage(identifier, userEmailDto.getEmail()));
+        kafkaBookRentMessageSender.send(book.toBookRentMessage(identifier, userEmailDto.getEmail()));
 
         return RentMapper.INSTANCE.bookToRentResponseDto(book);
     }
@@ -115,7 +120,8 @@ public class RentService {
         /**
          * send return book event to kafka
          */
-        messagePublisher.publishBookReturnMessage(book.toBookReturnMessage(identifier, userEmailDto.getEmail()));
+        //messagePublisher.publishBookReturnMessage(book.toBookReturnMessage(identifier, userEmailDto.getEmail()));
+        kafkaBookReturnMessageSender.send(book.toBookReturnMessage(identifier, rentId, userEmailDto.getEmail()));
 
         return BookMapper.INSTANCE.bookToBookAndRentResponseDto(book, rent);
     }

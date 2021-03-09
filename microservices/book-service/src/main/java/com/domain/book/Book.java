@@ -184,10 +184,11 @@ public class Book {
                 .build();
     }
 
-    public BookReturnMessage toBookReturnMessage(String returnIdentifier, String email) {
+    public BookReturnMessage toBookReturnMessage(String returnIdentifier, Long rentId, String email) {
 
         return BookReturnMessage.builder()
                 .bookId(this.getId())
+                .rentId(rentId)
                 .bookTitle(this.getTitle())
                 .bookAuthor(this.getAuthor())
                 .identifier(returnIdentifier)
