@@ -8,13 +8,11 @@ import com.dto.BookResponseDto;
 import com.dto.RentResponseDto;
 import com.dto.UserEmailDto;
 import com.exception.*;
-import com.kafka.BookReturnMessage;
 import com.kafka.channel.BookRentOutputChannel;
 import com.kafka.channel.BookReturnOutputChannel;
 import com.kafka.publisher.MessagePublisher;
 import com.mapper.BookMapper;
 import com.mapper.RentMapper;
-import com.utils.alert.AlertType;
 import com.utils.page.PageUtils;
 import com.utils.page.PagingResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -66,7 +64,7 @@ public class RentService {
         }
 
         /**
-         * send event to kafka
+         * send rent book event to kafka
          */
         messagePublisher.publishBookRentMessage(book.toBookRentMessage(identifier, userEmailDto.getEmail()));
 
@@ -100,6 +98,12 @@ public class RentService {
 
     @Transactional
     public BookResponseDto returnBook(Long bookId, Long rentId, String identifier) {
+        UserEmailDto userEmailDto = getUserEmailByIdentifier(identifier).getBody();
+
+        if (isNull(userEmailDto)) {
+            throw new EntityNotFoundException(ENTITY_NOT_FOUND);
+        }
+
         Book book = bookRepository.findByIdAndIsDeleted(bookId, false).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
 
         if (isInValidIdentifier(book.getIdentifier(), identifier)) {
@@ -109,14 +113,9 @@ public class RentService {
         Rent rent = rentRepository.findById(rentId).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
 
         /**
-         * send event to kafka
+         * send return book event to kafka
          */
-        messagePublisher.publishBookReturnMessage(BookReturnMessage.builder()
-                .bookId(bookId)
-                .rentId(rentId)
-                .identifier(identifier)
-                .alertType(AlertType.RETURN)
-                .build());
+        messagePublisher.publishBookReturnMessage(book.toBookReturnMessage(identifier, userEmailDto.getEmail()));
 
         return BookMapper.INSTANCE.bookToBookAndRentResponseDto(book, rent);
     }

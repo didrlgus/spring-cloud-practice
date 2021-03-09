@@ -40,6 +40,16 @@ spring:
           content-type: application/json
           group: book-rent-mail-group
           binder: kafka
+        book-return-alert-consumer:
+          destination: book-return-topic
+          content-type: application/json
+          group: book-return-alert-group
+          binder: kafka
+        book-return-mail-consumer:
+          destination: book-return-topic
+          content-type: application/json
+          group: book-return-mail-group
+          binder: kafka
   mail:
     host: smtp.gmail.com
     port: 587

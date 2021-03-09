@@ -6,6 +6,7 @@ import com.dto.BookRequestDto;
 import com.dto.ReviewRequestDto;
 import com.dto.ReviewResponseDto;
 import com.kafka.BookRentMessage;
+import com.kafka.BookReturnMessage;
 import com.utils.alert.AlertType;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -180,6 +181,19 @@ public class Book {
                 .email(email)
                 .rentExpiredDate(LocalDate.now().plusMonths(1))
                 .alertType(AlertType.RENT)
+                .build();
+    }
+
+    public BookReturnMessage toBookReturnMessage(String returnIdentifier, String email) {
+
+        return BookReturnMessage.builder()
+                .bookId(this.getId())
+                .bookTitle(this.getTitle())
+                .bookAuthor(this.getAuthor())
+                .identifier(returnIdentifier)
+                .email(email)
+                .returnDateTime(LocalDateTime.now())
+                .alertType(AlertType.RETURN)
                 .build();
     }
 }
