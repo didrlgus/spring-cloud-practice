@@ -1,7 +1,7 @@
 package com.kafka.consumer;
 
-import com.kafka.BookReturnMessage;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
+import com.kafka.message.BookReturnMessage;
+import com.kafka.config.KafkaUtils;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -13,7 +13,6 @@ import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @EnableKafka
@@ -48,12 +47,7 @@ public class KafkaBookReturnConsumerConfig {
 
     @ConditionalOnMissingBean(name = "kafkaBookReturnListenerContainerFactory")
     private Map<String, Object> consumerFactoryConfig(JsonDeserializer<BookReturnMessage> deserializer) {
-        Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, groupName);
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
-        return props;
+        return KafkaUtils.consumerFactoryConfig(bootstrapServers, groupName, deserializer);
     }
 
     private JsonDeserializer<BookReturnMessage> JsonDeserializer() {

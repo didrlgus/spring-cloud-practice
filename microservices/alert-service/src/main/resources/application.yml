@@ -21,35 +21,6 @@ spring:
       enabled: true
       path: /console
 
-  cloud:
-    stream:
-      kafka:
-        binder:
-          brokers: 3.35.229.19
-          zkNodes: 3.35.229.19
-          defaultBrokerPort: 9092
-          autoCreateTopics: false
-      bindings:
-        book-rent-alert-consumer:
-          destination: book-rent-topic
-          content-type: application/json
-          group: book-rent-alert-group
-          binder: kafka
-        book-rent-mail-consumer:
-          destination: book-rent-topic
-          content-type: application/json
-          group: book-rent-mail-group
-          binder: kafka
-        book-return-alert-consumer:
-          destination: book-return-topic
-          content-type: application/json
-          group: book-return-alert-group
-          binder: kafka
-        book-return-mail-consumer:
-          destination: book-return-topic
-          content-type: application/json
-          group: book-return-mail-group
-          binder: kafka
   mail:
     host: smtp.gmail.com
     port: 587
@@ -65,6 +36,26 @@ spring:
             trust: smtp.gmail.com
           starttls:
             enable: true
+
+kafka:
+  bootstrapServers: 3.35.229.19:9092
+  topic:
+    rent:
+      name: book-rent-topic
+    return:
+      name: book-return-topic
+  consumer:
+    rent:
+      alert:
+        groupName: book-rent-alert-group
+      mail:
+        groupName: book-rent-mail-group
+    return:
+      alert:
+        groupName: book-return-alert-group
+      mail:
+        groupName: book-return-mail-group
+
 logging:
   level:
     org.hibernate.type: debug

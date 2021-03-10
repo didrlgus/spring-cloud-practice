@@ -1,4 +1,4 @@
-package com.kafka.publisher;
+package com.kafka.config;
 
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -16,8 +16,11 @@ public class KafkaTopicConfig {
     @Value("${kafka.bootstrapServers}")
     private String bootstrapServers;
 
-    @Value("${kafka.bookRentTopicName}")
-    private String topicName;
+    @Value("${kafka.topic.rent.name}")
+    private String rentTopicName;
+
+    @Value("${kafka.topic.return.name}")
+    private String returnTopicName;
 
     @Bean
     public KafkaAdmin kafkaAdmin() {
@@ -27,9 +30,14 @@ public class KafkaTopicConfig {
         return new KafkaAdmin(configs);
     }
 
-    @Bean
-    public NewTopic newTopic() {
-        return new NewTopic(topicName, 1, (short) 1);
+    @Bean("bookRentTopic")
+    public NewTopic bookRentTopic() {
+        return new NewTopic(rentTopicName, 1, (short) 1);
+    }
+
+    @Bean("bookReturnTopic")
+    public NewTopic bookReturnTopic() {
+        return new NewTopic(returnTopicName, 1, (short) 1);
     }
 
 }

@@ -13,14 +13,16 @@ dependencies {
     compile('org.springframework.boot:spring-boot-starter-data-jpa')
     compile('org.springframework.cloud:spring-cloud-starter-netflix-ribbon')
     compile('org.springframework.retry:spring-retry:1.2.2.RELEASE')
-    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-stream-kafka', version: '2.2.1.RELEASE'
     compile('org.springframework.boot:spring-boot-starter-mail')
     compile('org.springframework.boot:spring-boot-starter-thymeleaf')
     compile group: 'nz.net.ultraq.thymeleaf', name: 'thymeleaf-layout-dialect', version: '2.4.1'
+    implementation 'org.springframework.kafka:spring-kafka'
     runtimeOnly 'com.h2database:h2'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+    testImplementation 'org.springframework.cloud:spring-cloud-stream-test-support'
 }
 
 dependencyManagement {

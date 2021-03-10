@@ -21,13 +21,13 @@ spring:
       enabled: true
       path: /console
 
-  autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration
-
 kafka:
-  bootstrapServers: 13.209.85.79:9092
-  bookRentTopicName: book-rent-topic
-  bookReturnTopicName: book-return-topic
+  bootstrapServers: 3.35.229.19:9092
+  topic:
+    rent:
+      name: book-rent-topic
+    return:
+      name: book-return-topic
   consumer:
     rent:
       groupName: book-rent-consumer-group

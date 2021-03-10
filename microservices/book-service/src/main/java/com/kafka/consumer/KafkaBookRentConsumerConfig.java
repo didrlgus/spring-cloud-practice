@@ -1,11 +1,11 @@
 package com.kafka.consumer;
 
-import org.apache.kafka.clients.consumer.ConsumerConfig;
+import com.kafka.config.KafkaUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import com.kafka.BookRentMessage;
+import com.kafka.message.BookRentMessage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,7 +13,6 @@ import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @EnableKafka
@@ -48,12 +47,7 @@ public class KafkaBookRentConsumerConfig {
 
     @ConditionalOnMissingBean(name = "kafkaBookRentListenerContainerFactory")
     private Map<String, Object> consumerFactoryConfig(JsonDeserializer<BookRentMessage> deserializer) {
-        Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, groupName);
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
-        return props;
+        return KafkaUtils.consumerFactoryConfig(bootstrapServers, groupName, deserializer);
     }
 
     private JsonDeserializer<BookRentMessage> JsonDeserializer() {

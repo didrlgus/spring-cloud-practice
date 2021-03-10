@@ -1,6 +1,6 @@
-package com.kafka.publisher;
+package com.kafka.sender;
 
-import com.kafka.BookRentMessage;
+import com.kafka.message.BookReturnMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,28 +17,27 @@ import org.springframework.util.concurrent.ListenableFutureCallback;
 @Slf4j
 @RequiredArgsConstructor
 @Component
-public class KafkaBookRentMessageSender {
+public class KafkaBookReturnMessageSender {
+    @Qualifier("bookReturnKafkaTemplate")
+    private final KafkaTemplate<String, BookReturnMessage> kafkaTemplate;
 
-    @Qualifier("bookRentKafkaTemplate")
-    private final KafkaTemplate<String, BookRentMessage> kafkaTemplate;
+    @Value("${kafka.topic.return.name}")
+    private String bookReturnTopic;
 
-    @Value("${kafka.bookRentTopicName}")
-    private String topicName;
+    public void send(BookReturnMessage bookRentMessage) {
 
-    public void send(BookRentMessage bookRentMessage) {
-
-        Message<BookRentMessage> message = MessageBuilder
+        Message<BookReturnMessage> message = MessageBuilder
                 .withPayload(bookRentMessage)
-                .setHeader(KafkaHeaders.TOPIC, topicName)
+                .setHeader(KafkaHeaders.TOPIC, bookReturnTopic)
                 .build();
 
-        ListenableFuture<SendResult<String, BookRentMessage>> future = kafkaTemplate.send(message);
+        ListenableFuture<SendResult<String, BookReturnMessage>> future = kafkaTemplate.send(message);
 
-        future.addCallback(new ListenableFutureCallback<SendResult<String, BookRentMessage>>() {
+        future.addCallback(new ListenableFutureCallback<SendResult<String, BookReturnMessage>>() {
             @Override
-            public void onSuccess(SendResult<String, BookRentMessage> stringObjectSendResult) {
-                System.out.println("Sent message=[" + stringObjectSendResult.getProducerRecord().value().toString() +
-                        "] with offset=[" + stringObjectSendResult.getRecordMetadata().offset() + "]");
+            public void onSuccess(SendResult<String, BookReturnMessage> result) {
+                log.info("Sent message={} to topic{} with offset={}",
+                        result.getProducerRecord().value().toString(), result.getRecordMetadata().topic(), result.getRecordMetadata().offset());
             }
 
             @Override
@@ -47,4 +46,5 @@ public class KafkaBookRentMessageSender {
             }
         });
     }
+
 }
