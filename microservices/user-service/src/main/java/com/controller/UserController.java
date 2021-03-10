@@ -15,6 +15,7 @@ import java.util.Map;
 
 import static com.exception.message.CommonExceptionMessage.ENTITY_NOT_FOUND;
 
+@CrossOrigin(origins = {"*"})
 @RequiredArgsConstructor
 @RestController
 public class UserController {
@@ -28,7 +29,7 @@ public class UserController {
         return ResponseEntity.ok(userService.addUser(userAddRequestDto));
     }
 
-    @GetMapping("/users")
+    @GetMapping("/login")
     public ResponseEntity<User> getUser(@RequestParam("identifier") String identifier) {
 
         User authUser = userRepository.findByIdentifier(identifier)

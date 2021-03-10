@@ -20,7 +20,7 @@ import static java.util.Objects.isNull;
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
 
-    private final static String GET_AUTH_USER_URL = "http://user-service/users?identifier=";
+    private final static String GET_AUTH_USER_URL = "http://user-service/login?identifier=";
 
     private final RestTemplate restTemplate;
 
