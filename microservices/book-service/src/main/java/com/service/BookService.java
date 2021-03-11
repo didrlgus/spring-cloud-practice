@@ -28,14 +28,17 @@ public class BookService {
     private final BookRepository bookRepository;
     private final PageUtils pageUtils;
 
-    private static final int BOOK_PAGE_SIZE = 10;
+    private static final int BOOK_PAGE_SIZE = 12;
     private static final int BOOK_SCALE_SIZE = 10;
+    private static final String FIRST_AVG_REVIEW_RATING = "0.0";
 
     @Transactional
     public BookResponseDto addBook(BookRequestDto.Post bookRequestDto) {
         Book book = bookRepository.save(bookRequestDto.toEntity());
+        BookResponseDto bookResponseDto = BookMapper.INSTANCE.bookToBookResponseDto(book);
+        bookResponseDto.setAvgReviewRating(Double.parseDouble(FIRST_AVG_REVIEW_RATING));
 
-        return BookMapper.INSTANCE.bookToBookResponseDto(book);
+        return bookResponseDto;
     }
 
     public PagingResponseDto getBooks(Integer page) {
@@ -50,8 +53,12 @@ public class BookService {
     }
 
     public BookResponseDto getBookDetails(Long id) {
+        Book book = bookRepository.findByIdAndIsDeleted(id, false).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND));
 
-        return BookMapper.INSTANCE.bookToBookResponseDto(bookRepository.findByIdAndIsDeleted(id, false).orElseThrow(() -> new EntityNotFoundException(ENTITY_NOT_FOUND)));
+        BookResponseDto bookResponseDto = BookMapper.INSTANCE.bookToBookResponseDto(book);
+        bookResponseDto.setAvgReviewRating(Double.parseDouble(book.calcAvgReviewRating()));
+
+        return bookResponseDto;
     }
 
     @Transactional
@@ -60,7 +67,10 @@ public class BookService {
 
         book.update(bookRequestDto);
 
-        return BookMapper.INSTANCE.bookToBookResponseDto(book);
+        BookResponseDto bookResponseDto = BookMapper.INSTANCE.bookToBookResponseDto(book);
+        bookResponseDto.setAvgReviewRating(Double.parseDouble(book.calcAvgReviewRating()));
+
+        return bookResponseDto;
     }
 
     @Transactional
@@ -69,7 +79,10 @@ public class BookService {
 
         book.delete();
 
-        return BookMapper.INSTANCE.bookToBookResponseDto(book);
+        BookResponseDto bookResponseDto = BookMapper.INSTANCE.bookToBookResponseDto(book);
+        bookResponseDto.setAvgReviewRating(Double.parseDouble(book.calcAvgReviewRating()));
+
+        return bookResponseDto;
     }
 
     @Transactional
@@ -93,7 +106,7 @@ public class BookService {
     private List<BookResponseDto> getBookResponseDtoList(Page<Book> bookPage) {
         return bookPage.stream().map(book -> {
             BookResponseDto bookResponseDto = BookMapper.INSTANCE.bookToBookResponseDto(book);
-            bookResponseDto.setAvgReviewRating(book.calcAvgReviewRating());
+            bookResponseDto.setAvgReviewRating((Double.parseDouble(book.calcAvgReviewRating())));
 
             return bookResponseDto;
         }).collect(Collectors.toList());

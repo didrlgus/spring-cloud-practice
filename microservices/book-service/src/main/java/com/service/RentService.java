@@ -35,7 +35,6 @@ import static com.exception.message.BookExceptionMessage.*;
 import static com.exception.message.CommonExceptionMessage.ENTITY_NOT_FOUND;
 import static java.util.Objects.isNull;
 
-//@EnableBinding({BookRentOutputChannel.class, BookReturnOutputChannel.class})
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -44,14 +43,13 @@ public class RentService {
     private final BookRepository bookRepository;
     private final RentRepository rentRepository;
     private final PageUtils pageUtils;
-    //private final MessagePublisher messagePublisher;
-    private final RestTemplate restTemplate;
     private final KafkaBookRentMessageSender kafkaBookRentMessageSender;
     private final KafkaBookReturnMessageSender kafkaBookReturnMessageSender;
+    private final RestTemplate restTemplate;
 
     private static final int RENT_PAGE_SIZE = 10;
     private static final int RENT_SCALE_SIZE = 10;
-    private final static String GET_AUTH_USER_URL = "http://user-service/users?identifier=";
+    private final static String GET_AUTH_USER_URL = "http://user-service/login?identifier=";
 
     @Transactional
     public RentResponseDto rentBook(Long id, String identifier) {
@@ -70,7 +68,6 @@ public class RentService {
         /**
          * send rent book event to kafka
          */
-        //messagePublisher.publishBookRentMessage(book.toBookRentMessage(identifier, userEmailDto.getEmail()));
         kafkaBookRentMessageSender.send(book.toBookRentMessage(identifier, userEmailDto.getEmail()));
 
         return RentMapper.INSTANCE.bookToRentResponseDto(book);
@@ -98,7 +95,10 @@ public class RentService {
 
         rent.extendRent(book);
 
-        return BookMapper.INSTANCE.bookToBookAndRentResponseDto(book, rent);
+        BookResponseDto bookResponseDto = BookMapper.INSTANCE.bookToBookAndRentResponseDto(book, rent);
+        bookResponseDto.setAvgReviewRating((Double.parseDouble(book.calcAvgReviewRating())));
+
+        return bookResponseDto;
     }
 
     @Transactional
@@ -120,10 +120,12 @@ public class RentService {
         /**
          * send return book event to kafka
          */
-        //messagePublisher.publishBookReturnMessage(book.toBookReturnMessage(identifier, userEmailDto.getEmail()));
         kafkaBookReturnMessageSender.send(book.toBookReturnMessage(identifier, rentId, userEmailDto.getEmail()));
 
-        return BookMapper.INSTANCE.bookToBookAndRentResponseDto(book, rent);
+        BookResponseDto bookResponseDto = BookMapper.INSTANCE.bookToBookAndRentResponseDto(book, rent);
+        bookResponseDto.setAvgReviewRating((Double.parseDouble(book.calcAvgReviewRating())));
+
+        return bookResponseDto;
     }
 
     public PagingResponseDto getRentListOfUser(String identifier, Integer page) {

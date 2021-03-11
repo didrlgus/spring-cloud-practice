@@ -29,7 +29,7 @@ public class BookResponseDto implements Serializable {
     private boolean isRent;
     private String etc;
     private Integer extensionCount;
-    private Integer avgReviewRating;
+    private Double avgReviewRating;
     private Integer reviewCount;
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
     private LocalDate rentExpiredDate;

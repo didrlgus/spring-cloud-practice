@@ -15,7 +15,7 @@ public class ReviewResponseDto {
     public static class Add {
         private String identifier;
 
-        private Integer avgReviewRating;
+        private Double avgReviewRating;
 
         private Integer reviewCount;
     }
@@ -28,7 +28,7 @@ public class ReviewResponseDto {
     public static class Delete {
         private String identifier;
 
-        private Integer avgReviewRating;
+        private Double avgReviewRating;
 
         private Integer reviewCount;
     }

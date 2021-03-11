@@ -1,0 +1,80 @@
+server:
+  port: 8006
+
+spring:
+  application:
+    name: alert-service
+  datasource:
+    url: jdbc:mysql://gabia-library.ch6gpmko6vhr.ap-northeast-2.rds.amazonaws.com:3306/alert_service?serverTimezone=UTC&characterEncoding=UTF-8
+    username: gabia
+    password: qazwsx123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    generate-ddl: true
+    hibernate:
+      ddl-auto: update
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: #username
+    password: #password
+    properties:
+      mail:
+        transport:
+          protocol: smtp
+        smtp:
+          auth: true
+          ssl:
+            trust: smtp.gmail.com
+          starttls:
+            enable: true
+
+kafka:
+  bootstrapServers: 3.35.229.19:9092
+  topic:
+    rent:
+      name: book-rent-topic
+    return:
+      name: book-return-topic
+  consumer:
+    rent:
+      alert:
+        groupName: book-rent-alert-group
+      mail:
+        groupName: book-rent-mail-group
+    return:
+      alert:
+        groupName: book-return-alert-group
+      mail:
+        groupName: book-return-mail-group
+
+logging:
+  level:
+    org.hibernate.type: debug
+
+eureka:
+  instance:
+    non-secure-port: ${server.port}
+    prefer-ip-address: true
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8000/eureka/
+
+ribbon:
+  eureka:
+    enabled: true
+
+security:
+  jwt:
+    uri: /auth/**
+    header: Token
+    prefix: Bearer
+    expiration: 86400 # 24*60*60
+    secret: JwtSecretKey

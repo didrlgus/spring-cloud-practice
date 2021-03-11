@@ -11,7 +11,7 @@ public class ReviewResponseDto {
 
     private String identifier;
 
-    private Integer avgReviewRating;
+    private Double avgReviewRating;
 
     private Integer reviewCount;
 
