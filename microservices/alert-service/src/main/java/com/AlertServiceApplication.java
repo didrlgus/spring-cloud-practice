@@ -1,8 +1,8 @@
 package com;
 
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
@@ -11,8 +11,14 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @SpringBootApplication(exclude = { KafkaAutoConfiguration.class })
 public class AlertServiceApplication {
 
+    private static final String APPLICATION_LOCATIONS = "spring.config.location="
+            + "classpath:application.yml,"
+            + "/root/gabia-library-config/alert-service.yml";
+
     public static void main(String[] args) {
-        SpringApplication.run(AlertServiceApplication.class, args);
+        new SpringApplicationBuilder(AlertServiceApplication.class)
+                .properties(APPLICATION_LOCATIONS)
+                .run(args);
     }
 
 }
