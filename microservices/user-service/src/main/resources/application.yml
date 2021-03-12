@@ -51,20 +51,5 @@ spring:
       path: /console
 
 ---
-spring:
-  profiles: release
-  datasource:
-    url: jdbc:mysql://mysql-ip:3306/user?serverTimezone=UTC&characterEncoding=UTF-8
-    username: #username
-    password: #password
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  jpa:
-    database: mysql
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
-    properties:
-      hibernate:
-        format_sql: true
-        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-    generate-ddl: true
-    hibernate:
-      ddl-auto: update
+spring.profiles: release
+spring.profiles.include: real-db
