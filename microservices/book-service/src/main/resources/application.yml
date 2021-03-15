@@ -8,7 +8,7 @@ server:
   port: 8004
 
 kafka:
-  bootstrapServers: 3.35.229.19:9092
+  bootstrapServers: 13.124.195.190:9092
   topic:
     rent:
       name: book-rent-topic

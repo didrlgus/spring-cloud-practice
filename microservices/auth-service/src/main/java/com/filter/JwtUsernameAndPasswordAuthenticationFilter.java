@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +26,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
@@ -61,13 +63,18 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
         // return jwt in response header
-        response.addHeader("Token", jwtConfig.getPrefix() + " " + makeJwtWithAuthentication(authentication));
-        response.addHeader("UserId", customUserDetails.getId().toString());
+        response.addHeader(jwtConfig.getHeader(), jwtConfig.getPrefix() + " " + makeJwtWithAuthentication(authentication));
+
+        response.addHeader("authority", authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority).collect(Collectors.toList()).toString());
+
+        response.addHeader("id", customUserDetails.getId().toString());
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        System.out.println(failed);
+        log.info(failed.toString());
+
         super.unsuccessfulAuthentication(request, response, failed);
     }
 

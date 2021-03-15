@@ -6,6 +6,7 @@ spring:
     name: api-gateway
 
 zuul:
+  ignored-headers: Access-Control-Allow-Credentials, Access-Control-Allow-Origin
   routes:
     auth-service:
       path: /auth/**

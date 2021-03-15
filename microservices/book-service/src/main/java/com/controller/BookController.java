@@ -14,7 +14,7 @@ import javax.validation.Valid;
 
 import java.nio.file.AccessDeniedException;
 
-@CrossOrigin(origins = {"*"})
+@CrossOrigin
 @RequiredArgsConstructor
 @RestController
 public class BookController {

@@ -15,4 +15,5 @@ public class ZullApiGateway {
     public static void main(String[] args) {
         SpringApplication.run(ZullApiGateway.class, args);
     }
+
 }
